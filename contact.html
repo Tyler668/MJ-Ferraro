@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact · Paintings by Peg</title>
+  <meta name="description" content="Ask about a painting, commission a pet portrait or book a Pasta & Paint party.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4c11 0 20 8 20 18 0 7-5 10-10 10h-4c-2.5 0-4 1.8-4 4 0 1 .6 2 .6 3.2C26.6 42 25.4 44 23 44 12 44 4 35 4 24S13 4 24 4z' fill='%23e8dcc6'/%3E%3Ccircle cx='15' cy='20' r='3.6' fill='%23bf5236'/%3E%3Ccircle cx='23' cy='13' r='3.6' fill='%232c5b6b'/%3E%3Ccircle cx='33' cy='16' r='3.6' fill='%23b58a45'/%3E%3Ccircle cx='13' cy='30' r='3.6' fill='%238db3a7'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="contact" data-cta="off">
+  <header id="site-header"></header>
+
+  <main>
+    <section class="page-hero" style="padding-bottom:clamp(72px,9vw,130px)">
+      <div class="wrap contact-grid">
+        <div>
+          <span class="eyebrow reveal">Get in touch</span>
+          <h1 class="reveal" style="--d:.08s">Contact</h1>
+          <p class="lede reveal" style="--d:.16s">Ask about a painting, a pet portrait, a custom piece or a Pasta &amp; Paint party.</p>
+          <!-- PLACEHOLDER contact details live in js/data.js (window.SITE) -->
+          <ul class="contact-list reveal" style="--d:.22s">
+            <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5"/></svg></span><div><small>Email</small><a data-site="email" href="#"></a></div></li>
+            <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 3.5h3.5l1.6 4.4-2.2 1.5a11 11 0 0 0 6.7 6.7l1.5-2.2 4.4 1.6V19a2 2 0 0 1-2 2A17 17 0 0 1 3 5.5a2 2 0 0 1 2-2z"/></svg></span><div><small>Phone</small><a data-site="phone" href="#"></a></div></li>
+            <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".9" fill="currentColor"/></svg></span><div><small>Instagram</small><a data-site="instagram" href="#" target="_blank" rel="noopener"></a></div></li>
+            <li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span><div><small>Studio</small><span data-site="region"></span> · visits by appointment</div></li>
+          </ul>
+        </div>
+
+        <form class="form-card reveal" id="contact-form" style="--d:.2s" novalidate>
+          <div class="piece-chip" id="piece-chip"><img alt=""><div><small>Asking about</small><strong></strong></div></div>
+          <div class="field-row">
+            <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>
+            <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
+          </div>
+          <div class="field">
+            <label for="f-topic">I'm interested in</label>
+            <select id="f-topic" name="topic">
+              <option value="painting">An available painting</option>
+              <option value="pet">A pet portrait</option>
+              <option value="commission">A custom painting commission</option>
+              <option value="custom">A painted keepsake or gift</option>
+              <option value="pasta">A Pasta &amp; Paint party</option>
+              <option value="other">Something else</option>
+            </select>
+          </div>
+          <div class="field"><label for="f-msg">Message</label><textarea id="f-msg" name="message" required placeholder="Your message"></textarea></div>
+          <button class="btn" type="submit">Send message
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
+          <p class="form-status" id="form-status" role="status"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/image-meta.js"></script>
+  <script src="js/site.js"></script>
+  <script>
+  (function () {
+    const { $, thumb } = window.Site;
+    const q = new URLSearchParams(location.search);
+    const topic = $("#f-topic"), msg = $("#f-msg");
+    const piece = window.WORKS.find((w) => w.id === q.get("piece"));
+    const like = window.WORKS.find((w) => w.id === q.get("like"));
+
+    if (piece || like) {
+      const w = piece || like, chip = $("#piece-chip");
+      chip.classList.add("is-on");
+      $("img", chip).src = thumb(w.img);
+      $("strong", chip).textContent = w.title;
+      if (like) $("small", chip).textContent = "Something like";
+      topic.value = piece ? "painting" : "commission";
+      msg.value = piece ? `Hi Peg, I'd love to know more about "${w.title}".` : `Hi Peg, I loved "${w.title}". Would you paint something similar?`;
+    } else if (q.get("topic")) {
+      topic.value = q.get("topic");
+    }
+
+    // No backend yet: open the visitor's email app with everything filled in.
+    // When hosting, swap for Netlify Forms or Formspree (see README).
+    $("#contact-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const f = e.target, status = $("#form-status");
+      if (!f.name.value.trim() || !/\S+@\S+\.\S+/.test(f.email.value) || !f.message.value.trim()) {
+        status.style.color = "var(--buoy)";
+        status.textContent = "Please add your name, a valid email and a short message.";
+        return;
+      }
+      const subject = `${topic.options[topic.selectedIndex].text}${piece ? `: ${piece.title}` : ""}, from ${f.name.value}`;
+      const body = `${f.message.value}\n\n${f.name.value}\n${f.email.value}`;
+      location.href = `mailto:${window.SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      status.style.color = "";
+      status.textContent = "Opening your email app…";
+    });
+  })();
+  </script>
+</body>
+</html>

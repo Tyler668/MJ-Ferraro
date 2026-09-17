@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pasta &amp; Paint · Paintings by Peg</title>
+  <meta name="description" content="Pasta & Paint parties: a guided painting lesson for your group with a homemade pasta dinner.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4c11 0 20 8 20 18 0 7-5 10-10 10h-4c-2.5 0-4 1.8-4 4 0 1 .6 2 .6 3.2C26.6 42 25.4 44 23 44 12 44 4 35 4 24S13 4 24 4z' fill='%23e8dcc6'/%3E%3Ccircle cx='15' cy='20' r='3.6' fill='%23bf5236'/%3E%3Ccircle cx='23' cy='13' r='3.6' fill='%232c5b6b'/%3E%3Ccircle cx='33' cy='16' r='3.6' fill='%23b58a45'/%3E%3Ccircle cx='13' cy='30' r='3.6' fill='%238db3a7'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="pasta">
+  <header id="site-header"></header>
+
+  <main>
+    <section class="page-hero pp-hero">
+      <div class="wrap split">
+        <div>
+          <span class="eyebrow reveal">Private painting parties</span>
+          <h1 class="reveal" style="--d:.08s"><span class="hand">an evening of</span>Pasta <span class="amp">&amp;</span> Paint</h1>
+          <p class="lede reveal" style="--d:.16s">A private painting party with dinner. Peg leads your group through a painting step by step, a homemade pasta dinner is served, and everyone takes their canvas home.</p>
+          <!-- PLACEHOLDER details: confirm group size, length and location with Peg -->
+          <div class="facts reveal" style="--d:.22s">
+            <span class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.4"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14.5 14.6c3.2-.8 6.5 1.3 6.5 5.4"/></svg>Groups of 6–20</span>
+            <span class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>About 3 hours</span>
+            <span class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20l9-9M14 4c3 0 6 3 6 6l-4 1-3-3z"/></svg>All supplies included</span>
+            <span class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7v9H3z"/><path d="M9 20v-6h6v6"/></svg>Your home or a hosted venue</span>
+          </div>
+          <div class="btn-row reveal" style="--d:.28s">
+            <a class="btn" href="contact.html?topic=pasta">Plan your party
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+            <a class="btn btn--ghost" href="#evening">How the night goes</a>
+          </div>
+        </div>
+        <div class="pp-stack reveal" id="pp-stack" style="--d:.2s"></div>
+      </div>
+    </section>
+
+    <section class="section" id="evening">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow reveal">Schedule</span>
+            <h2 class="reveal" style="--d:.08s">The evening</h2>
+          </div>
+          <p class="reveal" style="--d:.16s">No painting experience is needed.</p>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+    </section>
+
+    <section class="section section--sand">
+      <div class="wrap">
+        <div class="menu-card reveal">
+          <h2>Sample menu</h2>
+          <p style="text-align:center;color:var(--ink-soft);max-width:52ch;margin:0 auto">Menus change with the season. Let Peg know about any dietary needs.</p>
+          <div class="menu-grid" id="menu"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow reveal">Photos</span>
+            <h2 class="reveal" style="--d:.08s">Past parties</h2>
+          </div>
+        </div>
+        <div class="photo-grid reveal" id="photo-grid"></div>
+      </div>
+    </section>
+
+    <section class="section section--sand">
+      <div class="wrap">
+        <div class="section-head" style="justify-content:center;text-align:center">
+          <div>
+            <span class="eyebrow reveal">FAQ</span>
+            <h2 class="reveal" style="--d:.08s;margin:0 auto">Questions</h2>
+          </div>
+        </div>
+        <!-- PLACEHOLDER answers: confirm with Peg -->
+        <div class="faq reveal">
+          <details open><summary>Do guests need painting experience?</summary><p>No. Peg breaks the painting into simple steps and helps each guest as they go.</p></details>
+          <details><summary>What will we paint?</summary><p>Usually a coastal or seasonal scene, such as waves, a marsh at sunset or a lighthouse. The host can choose from a few options or request one.</p></details>
+          <details><summary>Where do the parties happen?</summary><p>In your home or at a hosted venue. A dining table and some floor space is enough.</p></details>
+          <details><summary>What's included?</summary><p>Canvases, paints, brushes, easels, aprons, the lesson and dinner.</p></details>
+          <details><summary>What occasions is it good for?</summary><p>Birthdays, showers, reunions, book clubs and team events.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/image-meta.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/viewer.js"></script>
+  <script>
+  (function () {
+    const { $, $$, esc, thumb } = window.Site;
+    const pasta = window.Site.pastaItems();
+    const idx = (id) => pasta.findIndex((p) => p.id === id);
+    const open = (i, el) => window.Viewer.open(pasta, i, $("img", el) || el);
+
+    $("#pp-stack").innerHTML = ["pp-table", "pp-sunset", "pp-waves"].map((id) => {
+      const i = idx(id), p = pasta[i];
+      return `<button class="polaroid" type="button" data-i="${i}"><img src="${thumb(p.img)}" alt="${esc(p.caption)}"><span class="polaroid__cap">${esc(p.title)}</span></button>`;
+    }).join("");
+
+    const moments = [
+      ["pp-deck", "First", "Gather & settle in", "Guests arrive to easels and paints already set up."],
+      ["pp-table", "Then", "Paint along with Peg", "Peg demonstrates each stage and helps guests as they go."],
+      ["pp-chef", "Next", "Pasta is served", "While the paint dries, pasta and salads are served family style."],
+      ["pp-waves", "Finally", "Show & tell", "A group photo with the finished canvases."],
+    ];
+    $("#timeline").innerHTML = moments.map(([id, time, title, text], n) => {
+      const i = idx(id);
+      return `<div class="moment" data-n="${n + 1}">
+        <button class="moment__photo reveal" type="button" data-i="${i}"><img src="${thumb(pasta[i].img)}" alt="${esc(pasta[i].caption)}" loading="lazy"></button>
+        <div class="reveal" style="--d:.1s"><span class="moment__time">${time}</span><h3>${title}</h3><p>${text}</p></div>
+      </div>`;
+    }).join("");
+
+    const dishes = [["pp-pomodoro", "Penne Pomodoro", "bright tomato, basil & parmesan"], ["pp-pesto", "Penne al Pesto", "garden basil & pine nut"], ["pp-antipasti", "Antipasti", "grilled vegetables & bruschetta"], ["pp-buffet", "Family Style", "salads, pasta & more for the table"]];
+    $("#menu").innerHTML = dishes.map(([id, name, desc]) => {
+      const i = idx(id);
+      return `<button class="dish" type="button" data-i="${i}"><div class="dish__plate"><img src="${thumb(pasta[i].img)}" alt="${esc(name)}" loading="lazy"></div><h4>${name}</h4><p>${desc}</p></button>`;
+    }).join("");
+
+    $("#photo-grid").innerHTML = pasta.map((p, i) => `<button type="button" data-i="${i}"><img src="${thumb(p.img)}" alt="${esc(p.caption)}" loading="lazy" style="aspect-ratio:${window.Site.ratio(p.img)}"></button>`).join("");
+
+    $$("[data-i]").forEach((b) => b.addEventListener("click", () => open(+b.dataset.i, b)));
+    window.Site.observe();
+  })();
+  </script>
+</body>
+</html>

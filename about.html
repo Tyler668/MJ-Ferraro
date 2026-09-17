@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About · Paintings by Peg</title>
+  <meta name="description" content="About Peg, a painter of the coast, gardens and home.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4c11 0 20 8 20 18 0 7-5 10-10 10h-4c-2.5 0-4 1.8-4 4 0 1 .6 2 .6 3.2C26.6 42 25.4 44 23 44 12 44 4 35 4 24S13 4 24 4z' fill='%23e8dcc6'/%3E%3Ccircle cx='15' cy='20' r='3.6' fill='%23bf5236'/%3E%3Ccircle cx='23' cy='13' r='3.6' fill='%232c5b6b'/%3E%3Ccircle cx='33' cy='16' r='3.6' fill='%23b58a45'/%3E%3Ccircle cx='13' cy='30' r='3.6' fill='%238db3a7'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="about">
+  <header id="site-header"></header>
+
+  <main>
+    <section class="page-hero">
+      <div class="wrap split">
+        <div>
+          <span class="eyebrow reveal">About</span>
+          <h1 class="reveal" style="--d:.08s">About Peg</h1>
+          <!-- PLACEHOLDER BIO: written from the work itself. Replace with Peg's own story, background and a photo. -->
+          <div class="prose reveal" style="--d:.16s">
+            <p>Peg paints Rhode Island harbors and landmarks, Gulf Coast dunes, marsh birds, garden flowers and seafood suppers.</p>
+            <p>She works mostly in acrylic, and also in oil, watercolor and mixed media. She paints on buoys, ornaments, bags, slate and furniture as well.</p>
+            <p>She also hosts Pasta &amp; Paint parties, where groups paint along with her over dinner.</p>
+          </div>
+          <div class="btn-row reveal" style="--d:.24s;margin-top:2rem">
+            <a class="btn" href="gallery.html">Visit the gallery
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+            <a class="btn btn--ghost" href="contact.html">Say hello</a>
+          </div>
+        </div>
+        <figure class="portrait-frame reveal" style="--d:.2s">
+          <!-- PLACEHOLDER: swap for a photo of Peg at her easel -->
+          <img src="images/full/walking-on-top-of-the-world-16x20-acrylic-on-canvas.jpg" alt="Walking on Top of the World, a painting by Peg">
+          <figcaption>“Walking on Top of the World”</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section--tight">
+      <div class="wrap">
+        <div class="stats" id="stats"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow reveal">Mediums</span>
+            <h2 class="reveal" style="--d:.08s">What she works in</h2>
+          </div>
+          <p class="reveal" style="--d:.16s">Click a medium to see an example.</p>
+        </div>
+        <div class="mediums" id="mediums"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/image-meta.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/viewer.js"></script>
+  <script>
+  (function () {
+    const { $, $$, esc, thumb, reduceMotion } = window.Site;
+    const W = window.WORKS;
+    const stats = [
+      [W.length, "original works in the gallery"],
+      [W.filter((w) => w.status === "available").length, "paintings available now"],
+      [window.PETS.length, "pet portraits"],
+      [window.ROOMS.length, "subject rooms"],
+    ];
+    $("#stats").innerHTML = stats.map(([n, l], i) => `<div class="stat reveal" style="--d:${i * 0.08}s"><strong data-n="${n}">0</strong><span>${l}</span></div>`).join("");
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return; io.unobserve(e.target);
+      const el = e.target, n = +el.dataset.n, t0 = performance.now();
+      const tick = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); };
+      reduceMotion ? (el.textContent = n) : requestAnimationFrame(tick);
+    }), { threshold: 0.6 });
+    $$("#stats strong").forEach((s) => io.observe(s));
+
+    const mediums = [
+      ["Acrylic", "Most of her work", "blue-heron-family"],
+      ["Oil", "Thick, textured paint", "first-bloom"],
+      ["Watercolor", "On paper", "flying-south"],
+      ["Mixed media", "Layered materials", "under-the-sea"],
+    ];
+    $("#mediums").innerHTML = mediums.map(([name, sub, id], i) => {
+      const k = W.findIndex((w) => w.id === id);
+      return `<button class="medium reveal" type="button" data-k="${k}" style="--d:${i * 0.08}s;border:0;padding:0;cursor:zoom-in;text-align:left">
+        <img src="${thumb(W[k].img)}" alt="${esc(W[k].title)}" loading="lazy"><div><h3>${name}</h3><span>${sub}</span></div></button>`;
+    }).join("");
+    $$("#mediums .medium").forEach((b) => b.addEventListener("click", () => {
+      const list = mediums.map(([, , id]) => W.find((w) => w.id === id));
+      window.Viewer.open(list, list.findIndex((w) => w === W[+b.dataset.k]), $("img", b));
+    }));
+    window.Site.observe();
+  })();
+  </script>
+</body>
+</html>

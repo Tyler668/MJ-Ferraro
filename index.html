@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paintings by Peg · Original Coastal Art</title>
+  <meta name="description" content="Original paintings of the sea, the shore, local flora and fauna, plus custom pet portraits and Pasta & Paint parties.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4c11 0 20 8 20 18 0 7-5 10-10 10h-4c-2.5 0-4 1.8-4 4 0 1 .6 2 .6 3.2C26.6 42 25.4 44 23 44 12 44 4 35 4 24S13 4 24 4z' fill='%23e8dcc6'/%3E%3Ccircle cx='15' cy='20' r='3.6' fill='%23bf5236'/%3E%3Ccircle cx='23' cy='13' r='3.6' fill='%232c5b6b'/%3E%3Ccircle cx='33' cy='16' r='3.6' fill='%23b58a45'/%3E%3Ccircle cx='13' cy='30' r='3.6' fill='%238db3a7'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="home">
+  <header id="site-header"></header>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="wrap hero__grid">
+        <div>
+          <span class="eyebrow reveal">Original paintings · <span data-site="region"></span></span>
+          <h1 class="reveal" style="--d:.08s">Salt air, wild blooms &amp; the places we call
+            <span class="underline">home<svg viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true"><path d="M3 14C40 6 90 4 130 7s55 6 67 3"/></svg></span></h1>
+          <p class="lede reveal" style="--d:.16s">Original acrylics, oils and watercolors of the coast, the marsh, the garden and the kitchen table.</p>
+          <div class="btn-row reveal" style="--d:.24s">
+            <a class="btn" href="gallery.html#status=available">Browse available work
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+            <a class="btn btn--ghost" href="pasta-and-paint.html">Book a Pasta &amp; Paint</a>
+          </div>
+          <div class="hero__meta reveal" style="--d:.32s">
+            <div><strong id="stat-available">24</strong><span>Paintings available</span></div>
+            <div><strong id="stat-total">38</strong><span>Works in the gallery</span></div>
+            <div><strong>4</strong><span>Mediums</span></div>
+          </div>
+        </div>
+
+        <div class="hero__art reveal" style="--d:.2s">
+          <div class="hero__hang" id="hero-hang">
+            <div class="hang-glow" aria-hidden="true"></div>
+            <div class="cast-shadow" aria-hidden="true"></div>
+            <div class="cast-shadow is-near" aria-hidden="true"></div>
+            <div class="hanging" id="hanging">
+              <svg class="wire" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60L50 0L100 60"/></svg>
+              <div class="hero-canvas" id="hero-canvas" role="button" tabindex="0" aria-label="View this painting up close"></div>
+            </div>
+            <span class="nail" aria-hidden="true"></span>
+          </div>
+          <div class="hero__caption">
+            <div class="hero__caption-text" id="hero-caption">
+              <div class="hero__caption-title"></div>
+              <div class="hero__caption-meta"></div>
+            </div>
+            <div class="hero__dots" id="hero-dots" role="tablist" aria-label="Featured paintings"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MARQUEE ============ -->
+    <div class="marquee" aria-hidden="true"><div class="marquee__track" id="marquee"></div></div>
+
+    <!-- ============ AVAILABLE: COVERFLOW ============ -->
+    <section class="section section--ink flow-section" id="available">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow reveal">Available now</span>
+            <h2 class="reveal" style="--d:.08s">Ready for a new wall</h2>
+          </div>
+          <p class="reveal" style="--d:.16s">Drag or use the arrows to browse. Click the center painting for a closer look.</p>
+        </div>
+      </div>
+      <div class="flow reveal" id="flow" style="--d:.1s">
+        <div class="flow__glow"></div>
+        <div class="flow__ledge"></div>
+        <div class="flow__stage"></div>
+      </div>
+      <div class="wrap">
+        <div class="flow__footer">
+          <button class="round-btn" type="button" id="flow-prev" aria-label="Previous painting"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 6l-6 6 6 6"/></svg></button>
+          <div class="flow__caption" id="flow-caption" aria-live="polite"><h3></h3><p></p></div>
+          <button class="round-btn" type="button" id="flow-next" aria-label="Next painting"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
+        </div>
+        <div class="flow__progress"><span id="flow-progress"></span></div>
+      </div>
+    </section>
+
+    <!-- ============ ROOMS ============ -->
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow reveal">The gallery</span>
+            <h2 class="reveal" style="--d:.08s">Browse by subject</h2>
+          </div>
+          <p class="reveal" style="--d:.16s">Each room includes sold pieces as well as available ones.</p>
+        </div>
+        <div class="rooms" id="rooms"></div>
+      </div>
+    </section>
+
+    <!-- ============ PASTA & PAINT ============ -->
+    <section class="section section--sand">
+      <div class="wrap split">
+        <div class="polaroids reveal" id="pp-polaroids"></div>
+        <div>
+          <span class="eyebrow reveal">Pasta &amp; Paint parties</span>
+          <h2 class="reveal" style="--d:.08s">Dinner and a painting lesson</h2>
+          <p class="lede reveal" style="--d:.16s">Peg leads your group through a painting step by step, and a homemade pasta dinner is served.</p>
+          <ul class="checklist reveal" style="--d:.22s">
+            <li>Step-by-step lesson for any skill level</li>
+            <li>Pasta dinner, served family style</li>
+            <li>Canvases, paints and brushes provided</li>
+            <li>Everyone takes their painting home</li>
+          </ul>
+          <div class="btn-row reveal" style="--d:.28s">
+            <a class="btn" href="pasta-and-paint.html">About Pasta &amp; Paint
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PET PORTRAITS ============ -->
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow reveal">Commissions</span>
+            <h2 class="reveal" style="--d:.08s">Pet portraits</h2>
+          </div>
+          <div class="reveal" style="--d:.16s">
+            <p style="margin-bottom:1.2rem">Custom portraits of any animal, painted from your photos. Peg also makes hand-painted keepsakes and gifts.</p>
+            <a class="btn btn--ghost" href="commissions.html">Commission a portrait
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
+          </div>
+        </div>
+        <div class="rail reveal" id="pet-rail"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/image-meta.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/viewer.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

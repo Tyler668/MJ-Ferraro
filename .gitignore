@@ -1,0 +1,5 @@
+# Raw Google Drive dump (converted copies live in images/)
+_source/
+*.zip
+tools/manifest.json
+__pycache__/

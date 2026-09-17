@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gallery · Paintings by Peg</title>
+  <meta name="description" content="Browse original paintings by Peg: sea and shore, harbors and hometowns, flora and fauna, tables and tales.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4c11 0 20 8 20 18 0 7-5 10-10 10h-4c-2.5 0-4 1.8-4 4 0 1 .6 2 .6 3.2C26.6 42 25.4 44 23 44 12 44 4 35 4 24S13 4 24 4z' fill='%23e8dcc6'/%3E%3Ccircle cx='15' cy='20' r='3.6' fill='%23bf5236'/%3E%3Ccircle cx='23' cy='13' r='3.6' fill='%232c5b6b'/%3E%3Ccircle cx='33' cy='16' r='3.6' fill='%23b58a45'/%3E%3Ccircle cx='13' cy='30' r='3.6' fill='%238db3a7'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="gallery">
+  <header id="site-header"></header>
+
+  <main>
+    <section class="page-hero">
+      <div class="wrap">
+        <span class="eyebrow reveal">Gallery</span>
+        <h1 class="reveal" style="--d:.08s">All paintings</h1>
+        <p class="lede reveal" style="--d:.16s">Filter by availability or subject. Click any painting for a closer look.</p>
+      </div>
+    </section>
+
+    <div class="filters">
+      <div class="wrap">
+        <div class="filters__row">
+          <div class="segmented" role="group" aria-label="Availability" id="status-filter">
+            <span class="segmented__pill"></span>
+            <button type="button" data-status="all" aria-pressed="true">All works</button>
+            <button type="button" data-status="available" aria-pressed="false">Available</button>
+            <button type="button" data-status="sold" aria-pressed="false">Sold</button>
+          </div>
+          <div class="legend"><span class="count" id="count"></span><span><i style="background:var(--sold)"></i>Sold</span></div>
+        </div>
+        <div class="chips" id="room-filter" role="group" aria-label="Room" style="margin-top:.9rem"></div>
+      </div>
+    </div>
+
+    <section class="wrap">
+      <p class="room-note" id="room-note"></p>
+      <div class="wall" id="wall"></div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/image-meta.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/viewer.js"></script>
+  <script>
+  (function () {
+    const { $, $$, esc, thumb, ratio, color, sizeText, statusText, lazyFade } = window.Site;
+    const WORKS = window.WORKS, ROOMS = window.ROOMS;
+    const wall = $("#wall");
+    const state = { status: "all", room: "all" };
+
+    // read #status=available&room=shore
+    const readHash = () => {
+      const p = new URLSearchParams(location.hash.slice(1));
+      state.status = ["available", "sold"].includes(p.get("status")) ? p.get("status") : "all";
+      state.room = ROOMS.some((r) => r.id === p.get("room")) ? p.get("room") : "all";
+    };
+    const writeHash = () => {
+      const p = new URLSearchParams();
+      if (state.status !== "all") p.set("status", state.status);
+      if (state.room !== "all") p.set("room", state.room);
+      history.replaceState(null, "", p.toString() ? "#" + p : location.pathname);
+    };
+
+    // tiles
+    wall.innerHTML = WORKS.map((w, i) => `
+      <button class="tile" type="button" data-i="${i}" style="--c:${color(w.img)}" aria-label="${esc(w.title)}, ${statusText(w)}">
+        <span class="tile__inner"><img src="${thumb(w.img)}" alt="${esc(w.title)}" loading="lazy">
+        <span class="tile__cap"><strong>${esc(w.title)}</strong><span>${[sizeText(w), w.medium].filter(Boolean).map(esc).join(" · ")}</span></span></span>
+        ${w.status === "sold" ? '<i class="red-dot" aria-hidden="true"></i>' : ""}
+      </button>`).join("");
+    const tiles = $$(".tile", wall);
+    tiles.forEach((t) => lazyFade($("img", t)));
+
+    const visibleWorks = () => WORKS.filter((w) => (state.status === "all" || w.status === state.status) && (state.room === "all" || w.room === state.room));
+
+    function layout() {
+      const W = wall.clientWidth;
+      const gap = W < 600 ? 10 : 18;
+      const targetH = W < 600 ? 150 : W < 1000 ? 210 : 270;
+      const vis = new Set(visibleWorks());
+      let row = [], sum = 0, y = 0;
+      const place = (items, h) => {
+        let x = 0;
+        items.forEach(({ t, r }) => {
+          const w = r * h;
+          t.style.transform = `translate(${x}px, ${y}px)`;
+          t.style.width = w + "px"; t.style.height = h + "px";
+          x += w + gap;
+        });
+        y += h + gap;
+      };
+      tiles.forEach((t, i) => {
+        const w = WORKS[i];
+        if (!vis.has(w)) { t.classList.add("is-hidden"); t.tabIndex = -1; return; }
+        t.classList.remove("is-hidden"); t.tabIndex = 0;
+        const r = ratio(w.img);
+        row.push({ t, r }); sum += r;
+        const rowW = sum * targetH + gap * (row.length - 1);
+        if (rowW >= W) {
+          place(row, (W - gap * (row.length - 1)) / sum);
+          row = []; sum = 0;
+        }
+      });
+      if (row.length) place(row, Math.min(targetH, (W - gap * (row.length - 1)) / sum));
+      wall.style.height = Math.max(0, y - gap) + "px";
+      $("#count").textContent = `${vis.size} ${vis.size === 1 ? "work" : "works"}`;
+    }
+
+    // status segmented control with sliding pill
+    const seg = $("#status-filter"), pill = $(".segmented__pill", seg);
+    const movePill = () => {
+      const b = $(`[data-status="${state.status}"]`, seg);
+      pill.style.width = b.offsetWidth + "px";
+      pill.style.transform = `translateX(${b.offsetLeft}px)`;
+    };
+    $$("button", seg).forEach((b) => b.addEventListener("click", () => { state.status = b.dataset.status; update(); }));
+
+    // room chips
+    const chips = $("#room-filter");
+    chips.innerHTML = `<button class="chip" type="button" data-room="all">All rooms <small>${WORKS.length}</small></button>` +
+      ROOMS.map((r) => `<button class="chip" type="button" data-room="${r.id}">${esc(r.name)} <small>${WORKS.filter((w) => w.room === r.id).length}</small></button>`).join("");
+    $$(".chip", chips).forEach((b) => b.addEventListener("click", () => { state.room = b.dataset.room; update(); }));
+
+    function update() {
+      $$("button", seg).forEach((b) => b.setAttribute("aria-pressed", b.dataset.status === state.status));
+      $$(".chip", chips).forEach((b) => b.setAttribute("aria-pressed", b.dataset.room === state.room));
+      const r = ROOMS.find((x) => x.id === state.room);
+      $("#room-note").textContent = r ? r.blurb : "";
+      movePill(); layout(); writeHash();
+    }
+
+    tiles.forEach((t, i) => t.addEventListener("click", () => {
+      const list = visibleWorks();
+      window.Viewer.open(list, list.indexOf(WORKS[i]), $("img", t));
+    }));
+
+    addEventListener("hashchange", () => { readHash(); update(); });
+    let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(update, 80); });
+    readHash();
+    // first layout without the slide-in transition
+    tiles.forEach((t) => (t.style.transition = "none"));
+    update();
+    requestAnimationFrame(() => requestAnimationFrame(() => tiles.forEach((t) => (t.style.transition = ""))));
+    document.fonts && document.fonts.ready.then(movePill);
+  })();
+  </script>
+</body>
+</html>
