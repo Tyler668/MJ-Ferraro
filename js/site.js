@@ -18,7 +18,7 @@
     fb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 8.5V7a1.5 1.5 0 0 1 1.5-1.5H17V2.5h-2.5A4.5 4.5 0 0 0 10 7v1.5H7.5v3H10V21.5h4v-10h2.5l.5-3z"/></svg>',
     zoom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4 21 21"/></svg>',
     frame: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 6 8.5M12 2.5l6 6"/><rect x="3.5" y="8.5" width="17" height="12.5" rx="1"/></svg>',
-    sofa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><path d="M3 12a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v5H3z"/><path d="M5 17v2M19 17v2"/></svg>',
+    sofa: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4.5" y="5" width="15" height="7" rx="2"/><rect x="1.5" y="9.5" width="4" height="8" rx="2"/><rect x="18.5" y="9.5" width="4" height="8" rx="2"/><rect x="5.5" y="11" width="13" height="6.5" rx="1.6"/><rect x="4.6" y="17" width="1.6" height="2.6" rx=".6"/><rect x="17.8" y="17" width="1.6" height="2.6" rx=".6"/></svg>',
     drag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 12h18M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg>',
   };
 

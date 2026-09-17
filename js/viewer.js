@@ -26,12 +26,13 @@
         <div class="viewer__stage">
           <div class="hangview">
             <div class="hang-glow" aria-hidden="true"></div>
-            <div class="shadow-wrap">
-              <div class="cast-shadow" aria-hidden="true"></div>
-              <div class="cast-shadow is-near" aria-hidden="true"></div>
-            </div>
-            <span class="nail" aria-hidden="true"></span>
-            <div class="rig-wrap">
+            <div class="zoom-layer">
+              <div class="shadow-wrap">
+                <div class="cast-shadow" aria-hidden="true"></div>
+                <div class="cast-shadow is-near" aria-hidden="true"></div>
+              </div>
+              <span class="nail" aria-hidden="true"></span>
+              <div class="rig-wrap">
               <div class="rig">
                 <svg class="wire" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60L50 0L100 60"/></svg>
                 <div class="slab">
@@ -43,6 +44,7 @@
                   <div class="slab__face slab__front"><img alt=""></div>
                 </div>
                 <span class="rig__tape" aria-hidden="true"></span>
+                </div>
               </div>
             </div>
           </div>
@@ -52,6 +54,8 @@
             <div class="roomview__note"></div>
           </div>
           <div class="loupe" aria-hidden="true"></div>
+          <button class="stage-nav stage-nav--prev" type="button" aria-label="Previous painting">${ICON.left}</button>
+          <button class="stage-nav stage-nav--next" type="button" aria-label="Next painting">${ICON.arrow}</button>
           <div class="viewer__modes" role="group" aria-label="View">
             <button type="button" data-mode="close" aria-pressed="true" aria-label="Up close" title="Up close">${ICON.zoom}</button>
             <button type="button" data-mode="room" aria-pressed="false" aria-label="In a room" title="In a room">${ICON.sofa}</button>
@@ -64,6 +68,13 @@
     document.body.appendChild(el);
 
     $(".viewer__close", el).addEventListener("click", close);
+    $(".stage-nav--prev", el).addEventListener("click", () => step(-1));
+    $(".stage-nav--next", el).addEventListener("click", () => step(1));
+    // in the room view, clicking the painting on the wall comes back up close
+    $(".viewer__stage", el).addEventListener("click", (e) => {
+      if (mode !== "room" || e.target.closest("button")) return;
+      if (overPainting(e)) setMode("close");
+    });
     $$(".viewer__modes button", el).forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
     $$(".swatches button", el).forEach((b) => b.addEventListener("click", () => {
       wallOverride = WALLS[+b.dataset.i][1];
@@ -82,8 +93,12 @@
         m.drx = clamp(m.drx - (e.clientY - m.lastY) * 0.15, -16, 16);
         m.lastX = e.clientX; m.lastY = e.clientY; m.idleAt = performance.now();
       } else if (e.pointerType === "mouse") {
+        if (mode === "room") {
+          stage.style.cursor = overPainting(e) ? "zoom-in" : "";
+          return;
+        }
         // over the painting: hold it nearly still and magnify; elsewhere: tilt towards the cursor
-        const onArt = mode === "close" && loupe(e);
+        const onArt = loupe(e);
         m.try = nx * (onArt ? 3 : 16); m.trx = -ny * (onArt ? 1.5 : 7);
       }
     });
@@ -99,7 +114,7 @@
     stage.addEventListener("pointercancel", end);
 
     document.addEventListener("keydown", (e) => { if (open) onKey(e); });
-    addEventListener("resize", () => { if (open) { layout(true); renderRoom(); } });
+    addEventListener("resize", () => { if (open) { layout(true); renderRoom(); setMode(mode, false); } });
 
     let touchX = null; // swipe between pieces on the details panel
     const info = $(".viewer__info", el);
@@ -157,7 +172,7 @@
     const d = isPrint ? 3 : kind === "framed" ? 20 : kind === "paper" ? 8 : clamp(Math.round(pxPerIn * 1.5), 10, 20);
     const top = Math.round(top0 + wire + (availH - ch) / 2);
 
-    geo = { sw, sh, cw, ch, d, kind };
+    geo = { sw, sh, cw, ch, d, kind, top };
     const view = $(".hangview", el);
     const set = (k, v) => view.style.setProperty(k, v);
     set("--cw", cw + "px"); set("--ch", ch + "px"); set("--d", d + "px");
@@ -247,10 +262,8 @@
     const books = [accent, sofa(0.45, 0.25), hsl(h + 40, sat(0.35), 0.66), "#ece4d4"];
     const wood = "#8c6a4c", woodDark = "#5b4331";
 
-    roomGeo = { ppi, cx: (cx) * ppi, cy: (fy - 34 - 8 - H / 2) * ppi, w: W * ppi };
-    const frameIn = kind === "framed" ? 1.6 : kind === "paper" ? 1 : 0;
-    const matIn = kind === "paper" ? Math.min(W, H) * 0.08 : 0;
-    const px = cx - W / 2, py = fy - 34 - 8 - H;
+    // the painting itself is the live element, positioned here by setMode
+    roomGeo = { ppi, cx: cx * ppi, cy: (fy - 34 - 8 - H / 2) * ppi, w: W * ppi };
 
     // plant leaves: [x offset, height, angle]
     const leaves = [[-1, 44, -20], [3, 47, 25], [-5, 38, -50], [5, 39, 55], [-2, 33, -10], [4, 30, 35], [-6, 27, -60], [1, 24, 10], [6, 22, 70], [-4, 19, -35], [2, 51, 5]];
@@ -289,15 +302,6 @@
       <polygon points="${n(cx - 44.5)},${n(fy + 2.6)} ${n(cx + 44.5)},${n(fy + 2.6)} ${n(cx + 53)},${n(fy + (VH - fy) * 0.7)} ${n(cx - 53)},${n(fy + (VH - fy) * 0.7)}" fill="none" stroke="${rugBorder}" stroke-width=".9"/>
       <polygon points="${n(cx - 40)},${n(fy + 4)} ${n(cx + 40)},${n(fy + 4)} ${n(cx + 46.5)},${n(fy + (VH - fy) * 0.6)} ${n(cx - 46.5)},${n(fy + (VH - fy) * 0.6)}" fill="none" stroke="${rugInner}" stroke-width=".45" stroke-dasharray="1.4 1"/>
       ${Array.from({ length: 29 }, (_, i) => `<path d="M${n(cx - 58 + i * (116 / 28))} ${n(fy + (VH - fy) * 0.78)} v1.2" stroke="${rugBorder}" stroke-width=".25"/>`).join("")}
-
-      <!-- the painting -->
-      <g filter="url(#rv-shadow)">
-        ${frameIn ? `<rect x="${n(px - frameIn)}" y="${n(py - frameIn)}" width="${n(W + frameIn * 2)}" height="${n(H + frameIn * 2)}" fill="${kind === "framed" ? "#2f251d" : "#c9ad83"}"/>` : ""}
-        ${matIn ? `<rect x="${n(px)}" y="${n(py)}" width="${n(W)}" height="${n(H)}" fill="#f8f3ea"/>` : ""}
-        <image href="${full(it.currentImg || it.img)}" x="${n(px + matIn)}" y="${n(py + matIn)}" width="${n(W - matIn * 2)}" height="${n(H - matIn * 2)}" preserveAspectRatio="xMidYMid slice"/>
-      </g>
-      <rect x="${n(px)}" y="${n(py)}" width="${n(W)}" height="${n(H)}" fill="url(#rv-light)" opacity=".35"/>
-      <rect x="${n(px)}" y="${n(py)}" width="${n(W)}" height="${n(H)}" fill="none" stroke="#000" stroke-opacity=".18" stroke-width=".15"/>
 
       <!-- fiddle-leaf fig -->
       <ellipse cx="${n(plantX)}" cy="${n(fy + 0.4)}" rx="8" ry="1.1" fill="#000" opacity=".16" filter="url(#rv-soft)"/>
@@ -369,47 +373,71 @@
     $$(".swatches button", el).forEach((b, i) => { b.style.background = WALLS[i][1] || hsl(h, sat(0.2), 0.89); });
   }
 
+  function overPainting(e) {
+    const r = $(".slab", el).getBoundingClientRect();
+    return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+  }
+
+  /* Where the painting and the room sit in each mode. The painting is one element
+     throughout, so the zoom is a single continuous move with nothing to cross-fade. */
+  function zoomStates() {
+    if (!geo || !roomGeo) return null;
+    const closeX = geo.sw / 2, closeY = geo.top + geo.ch / 2;
+    const s = roomGeo.w / geo.cw;                     // painting: close size -> size on the wall
+    const dx = roomGeo.cx - closeX, dy = roomGeo.cy - closeY;
+    return {
+      origin: `${closeX}px ${closeY}px`,
+      roomOrigin: `${roomGeo.cx}px ${roomGeo.cy}px`,
+      onWall: `translate(${dx}px, ${dy}px) scale(${s})`,
+      roomZoomed: `translate(${-dx / s}px, ${-dy / s}px) scale(${1 / s})`,
+    };
+  }
+
   function setMode(md, animate = true) {
     const same = md === mode;
     mode = md;
     $$(".viewer__modes button", el).forEach((b) => b.setAttribute("aria-pressed", b.dataset.mode === md));
-    const roomEl = $(".roomview", el), hangEl = $(".hangview", el), img = $(".slab__front img", el);
+    const roomEl = $(".roomview", el), hangEl = $(".hangview", el), zoom = $(".zoom-layer", el);
+    const stage = $(".viewer__stage", el);
     $(".viewer__hint", el).style.display = md === "room" ? "none" : "";
+    hangEl.classList.toggle("is-room", md === "room");   // fades the wire, nail and glow
+    stage.style.cursor = "";
     loupe(null);
 
-    // clear any in-flight zoom first, so the measurements below aren't mid-animation
     roomEl.getAnimations().forEach((a) => a.cancel());
-    hangEl.getAnimations().forEach((a) => a.cancel());
+    zoom.getAnimations().forEach((a) => a.cancel());
 
-    // the painting is the anchor: the room zooms out from it, and back in
-    const stage = $(".viewer__stage", el).getBoundingClientRect();
-    const ir = img.getBoundingClientRect();
-    const ok = !same && animate && !reduceMotion && roomGeo && ir.width > 0;
-    if (!ok) {
+    const z = zoomStates();
+    if (!z) { roomEl.classList.toggle("is-on", md === "room"); return; }
+    zoom.style.transformOrigin = z.origin;
+    roomEl.style.transformOrigin = z.roomOrigin;
+
+    const settle = () => {
+      zoom.style.transform = md === "room" ? z.onWall : "none";
+      roomEl.style.transform = md === "room" ? "none" : z.roomZoomed;
       roomEl.classList.toggle("is-on", md === "room");
-      hangEl.style.opacity = md === "room" ? 0 : 1;
-      return;
-    }
-    // keep the room rendered for the whole zoom; it is hidden once the way back finishes
-    roomEl.classList.add("is-on");
-    const ccx = ir.left - stage.left + ir.width / 2, ccy = ir.top - stage.top + ir.height / 2;
-    const k = ir.width / roomGeo.w;                       // how much bigger the close view is
-    const dx = ccx - roomGeo.cx, dy = ccy - roomGeo.cy;
-    const zoomed = `translate(${dx}px, ${dy}px) scale(${k})`;
-    const shrunk = `translate(${-dx / k}px, ${-dy / k}px) scale(${1 / k})`;
-    roomEl.style.transformOrigin = `${roomGeo.cx}px ${roomGeo.cy}px`;
-    hangEl.style.transformOrigin = `${ccx}px ${ccy}px`;
+    };
+    if (same || !animate || reduceMotion) { settle(); return; }
+
     const ease = "cubic-bezier(.4,0,.2,1)", dur = 900;
-    hangEl.style.opacity = 1;
-    if (md === "room") {
-      roomEl.animate([{ transform: zoomed, opacity: 0 }, { opacity: 1, offset: 0.35 }, { transform: "none", opacity: 1 }], { duration: dur, easing: ease });
-      hangEl.animate([{ transform: "none", opacity: 1 }, { opacity: 0, offset: 0.55 }, { transform: shrunk, opacity: 0 }], { duration: dur, easing: ease })
-        .onfinish = () => { if (mode === "room") hangEl.style.opacity = 0; };
-    } else {
-      roomEl.animate([{ transform: "none", opacity: 1 }, { opacity: 1, offset: 0.55 }, { transform: zoomed, opacity: 0 }], { duration: dur, easing: ease })
-        .onfinish = () => { if (mode === "close") roomEl.classList.remove("is-on"); };
-      hangEl.animate([{ transform: shrunk, opacity: 0 }, { opacity: 1, offset: 0.45 }, { transform: "none", opacity: 1 }], { duration: dur, easing: ease });
-    }
+    roomEl.classList.add("is-on");                       // stays rendered for the whole zoom
+    const from = md === "room" ? "none" : z.onWall;
+    const to = md === "room" ? z.onWall : "none";
+    const roomFrom = md === "room" ? z.roomZoomed : "none";
+    const roomTo = md === "room" ? "none" : z.roomZoomed;
+    zoom.animate([{ transform: from }, { transform: to }], { duration: dur, easing: ease });
+    roomEl.animate(
+      md === "room"
+        ? [{ transform: roomFrom, opacity: 0 }, { opacity: 1, offset: 0.4 }, { transform: roomTo, opacity: 1 }]
+        : [{ transform: roomFrom, opacity: 1 }, { opacity: 1, offset: 0.5 }, { transform: roomTo, opacity: 0 }],
+      { duration: dur, easing: ease },
+    ).onfinish = settle;
+    settleTransform(zoom, to);
+  }
+
+  // hold the end state without a fill, so later measurements stay honest
+  function settleTransform(elm, value) {
+    setTimeout(() => { if (open) elm.style.transform = value; }, 880);
   }
 
   /* ---------- details panel ---------- */
@@ -452,6 +480,7 @@
       layout(); kick(1.4);
     }));
 
+    $$(".stage-nav", el).forEach((b) => (b.style.display = items.length > 1 ? "" : "none"));
     const canRoom = !!(it.size && !it.object);
     $(".viewer__modes", el).style.display = canRoom ? "" : "none";
     if (!canRoom && mode === "room") setMode("close", false);
@@ -461,14 +490,16 @@
   const kick = (amt) => { if (!reduceMotion) { m.kick = amt; m.kickT = performance.now(); } };
   function tick(t) {
     if (!open) return;
-    if (!m.hover && !m.dragging) { m.try = Math.sin(t / 2800) * 5; m.trx = Math.sin(t / 3600) * 1.5; }
+    if (mode === "room") { m.try = 0; m.trx = 0; m.dry = 0; m.drx = 0; }
+    else if (!m.hover && !m.dragging) { m.try = Math.sin(t / 2800) * 5; m.trx = Math.sin(t / 3600) * 1.5; }
     if (!m.dragging && t - m.idleAt > 1800) { m.dry = lerp(m.dry, 0, 0.025); m.drx = lerp(m.drx, 0, 0.03); }
     const k = m.dragging ? 0.35 : 0.06;
     m.ry = lerp(m.ry, m.try + m.dry, k);
     m.rx = lerp(m.rx, m.trx + m.drx, k);
     const since = Math.max(0, t - m.kickT);
     const isPrint = geo && geo.kind === "print";
-    const a = (reduceMotion ? 0 : window.Site.swing(t) * (isPrint ? 0.6 : 1)) + m.kick * Math.exp(-since / 1100) * Math.sin(since / 280);
+    const sway = reduceMotion || mode === "room" ? 0 : window.Site.swing(t) * (isPrint ? 0.6 : 1);
+    const a = sway + m.kick * Math.exp(-since / 1100) * Math.sin(since / 280);
     $(".rig", el).style.transform = `rotateZ(${a.toFixed(3)}deg) rotateX(${m.rx.toFixed(2)}deg) rotateY(${m.ry.toFixed(2)}deg)`;
     const [far, near] = $$(".cast-shadow", el);
     const depth = geo ? geo.d / 14 : 1;
@@ -569,7 +600,7 @@
     info.classList.add("is-swapping");
     setTimeout(() => {
       index = (index + dir + items.length) % items.length;
-      renderInfo(); layout();
+      renderInfo(); layout(); renderRoom(); setMode(mode, false);
       m.dry = 0; m.drx = 0;
       wrap.getAnimations().forEach((a) => a.cancel());
       scene.getAnimations().forEach((a) => a.cancel());
