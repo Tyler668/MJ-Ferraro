@@ -1,10 +1,14 @@
 # Paintings by Peg
 
-Static site with no build step: plain HTML, CSS and JS. Open `index.html` through any local server:
+Static site with no build step: plain HTML, CSS and JS. To preview locally:
 
 ```
-python -m http.server 8765
+python tools/serve.py
 ```
+
+That serves the site at http://localhost:8765 with caching turned off, so edits show up on a
+plain reload. After changing CSS or JS, run `python tools/bump.py` to re-stamp the `?v=`
+version on the asset links; that also stops browsers serving stale files after a deploy.
 
 ## Editing content
 Everything lives in **`js/data.js`**:
