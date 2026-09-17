@@ -122,7 +122,7 @@
       c.style.transform = `translate3d(${x}px,0,${z}px) rotateY(${ry}deg)`;
       c.style.opacity = a > 4.2 ? 0 : a > 3.2 ? 4.2 - a : 1;
       c.style.zIndex = 100 - Math.round(a * 10);
-      c.style.pointerEvents = a > 3.5 ? "none" : "";
+      c.style.pointerEvents = a > 3.5 ? "none" : "auto";
       const cv = c.firstElementChild;
       cv.style.setProperty("--dim", Math.min(0.7, t * 0.38 + extra * 0.08).toFixed(2));
       c.classList.toggle("is-near", a < 1.6);
