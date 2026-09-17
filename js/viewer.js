@@ -255,10 +255,12 @@
     const wall = wallOverride || hsl(h, sat(0.2), 0.89);
     const darkWall = wallOverride === "#3b4f5c";
     const sofa = (l, s = 0.16) => hsl(h + 180, sat(s), l);
-    const accent = hsl(h, sat(0.55), 0.56), accentDeep = hsl(h, sat(0.5), 0.42);
+    const accent = pal.accent, accentDeep = hsl(h, sat(0.5), 0.42);
+    // a second colour drawn from the painting, for the striped pillow and the lamp
+    const accentAlt = pal.accent2 || hsl(h + 180, sat(0.4), 0.5);
     const cream = hsl(h, sat(0.25), 0.93), throwC = hsl(h + 28, sat(0.3), 0.78), throwD = hsl(h + 28, sat(0.28), 0.66);
     const rug = hsl(h, sat(0.12), 0.84), rugBorder = hsl(h, sat(0.16), 0.7), rugInner = hsl(h + 180, sat(0.08), 0.76);
-    const lampBase = hsl(h, sat(0.38), 0.52);
+    const lampBase = accentAlt;
     const books = [accent, sofa(0.45, 0.25), hsl(h + 40, sat(0.35), 0.66), "#ece4d4"];
     const wood = "#8c6a4c", woodDark = "#5b4331";
 
@@ -279,7 +281,7 @@
         <linearGradient id="rv-floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a5a40"/><stop offset="1" stop-color="#a07c5a"/></linearGradient>
         <linearGradient id="rv-cushion" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".14"/></linearGradient>
         <radialGradient id="rv-lamp"><stop offset="0" stop-color="#ffe7b8" stop-opacity=".75"/><stop offset="1" stop-color="#ffe7b8" stop-opacity="0"/></radialGradient>
-        <pattern id="rv-stripe" width="1.6" height="1.6" patternUnits="userSpaceOnUse"><rect width="1.6" height="1.6" fill="${cream}"/><rect width=".55" height="1.6" fill="${accentDeep}" opacity=".7"/></pattern>
+        <pattern id="rv-stripe" width="1.6" height="1.6" patternUnits="userSpaceOnUse"><rect width="1.6" height="1.6" fill="${cream}"/><rect width=".55" height="1.6" fill="${accentAlt}" opacity=".75"/></pattern>
         <filter id="rv-shadow" x="-20%" y="-20%" width="150%" height="150%"><feDropShadow dx=".7" dy="1.4" stdDeviation="1.1" flood-color="#2a1d12" flood-opacity=".35"/></filter>
         <filter id="rv-soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4"/></filter>
         <filter id="rv-haze" x="-30%" y="-10%" width="160%" height="120%"><feGaussianBlur stdDeviation="5"/></filter>

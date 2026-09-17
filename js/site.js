@@ -170,7 +170,7 @@
   }
 
   function derivePalette(img) {
-    let h = 38, s = 0.3, l = 0.55, vivid = 0;
+    let h = 38, s = 0.3, l = 0.55, vivid = 0, second = null, primaryArea = 1, secondArea = 0;
     if (img) {
       // sample the middle of the photo; the edges are often wall, table or frame
       const N = 64, cv = document.createElement("canvas");
@@ -189,7 +189,7 @@
       // half strength: enough to undo a photo's tint without bleaching a genuinely warm painting
       if (cn > labs.length * 0.03) { ca = (ca / cn) * 0.5; cb = (cb / cn) * 0.5; } else { ca = 0; cb = 0; }
 
-      const B = 24, W = new Float32Array(B), R = new Float32Array(B), G = new Float32Array(B), Bl = new Float32Array(B);
+      const B = 24, W = new Float32Array(B), members = Array.from({ length: B }, () => []);
       let total = 0, count = 0;
       labs.forEach(([L, a0, b0], j) => {
         const a = a0 - ca, bb = b0 - cb, C = Math.hypot(a, bb);
@@ -198,30 +198,65 @@
         if (C < 0.045 || L < 0.25) return;
         count++;
         const hue = (Math.atan2(bb, a) * 180 / Math.PI + 360) % 360;
-        const k = Math.floor(hue / (360 / B)) % B, w = C;   // area-weighted, nudged towards stronger colour
-        const i = j * 4;
-        W[k] += w; R[k] += px[i] * w; G[k] += px[i + 1] * w; Bl[k] += px[i + 2] * w;
+        const k = Math.floor(hue / (360 / B)) % B, i = j * 4;
+        W[k] += C;                                   // area-weighted, nudged towards stronger colour
+        members[k].push([C, px[i], px[i + 1], px[i + 2]]);
       });
+      // blues and greens spread over neighbouring hues, so score a wider window
+      const score = (k) => 0.35 * W[(k + B - 2) % B] + 0.7 * W[(k + B - 1) % B] + W[k] + 0.7 * W[(k + 1) % B] + 0.35 * W[(k + 2) % B];
+
+      // A cluster's *average* drifts towards mud when a painting is many-coloured, so take
+      // the most saturated quarter of it: a specific colour from the painting, not a blend.
+      const pick = (centre) => {
+        const pool = [];
+        for (let o = -2; o <= 2; o++) pool.push(...members[(centre + o + B) % B]);
+        if (!pool.length) return null;
+        pool.sort((p, q) => q[0] - p[0]);
+        const take = pool.slice(0, Math.max(8, Math.round(pool.length * 0.25)));
+        let r = 0, g = 0, b = 0;
+        for (const [, pr, pg, pb] of take) { r += pr; g += pg; b += pb; }
+        return rgbToHsl(r / take.length, g / take.length, b / take.length);
+      };
+
       let best = 0, bestScore = -1;
-      for (let k = 0; k < B; k++) {
-        // blues and greens spread over neighbouring hues, so score a wider window
-        const sc = 0.35 * W[(k + B - 2) % B] + 0.7 * W[(k + B - 1) % B] + W[k] + 0.7 * W[(k + 1) % B] + 0.35 * W[(k + 2) % B];
-        if (sc > bestScore) { bestScore = sc; best = k; }
-      }
-      let sr = 0, sg = 0, sb = 0, sw = 0;
-      for (const k of [(best + B - 2) % B, (best + B - 1) % B, best, (best + 1) % B, (best + 2) % B]) { sr += R[k]; sg += G[k]; sb += Bl[k]; sw += W[k]; }
-      if (sw > 0) {
-        [h, s, l] = rgbToHsl(sr / sw, sg / sw, sb / sw);
+      for (let k = 0; k < B; k++) { const sc = score(k); if (sc > bestScore) { bestScore = sc; best = k; } }
+      const primary = pick(best);
+      if (primary) {
+        [h, s, l] = primary;
         vivid = count / total;
+        // a secondary colour at least 75 degrees away, for accents in the room
+        let alt = -1, altScore = 0;
+        for (let k = 0; k < B; k++) {
+          const dist = Math.min((k - best + B) % B, (best - k + B) % B);
+          if (dist < 5) continue;
+          const sc = score(k);
+          if (sc > altScore) { altScore = sc; alt = k; }
+        }
+        if (alt >= 0 && altScore > bestScore * 0.22) { second = pick(alt); secondArea = altScore; }
+        primaryArea = bestScore;
       }
     }
-    const muted = vivid < 0.04 || s < 0.15;
+    // The biggest colour area isn't always the one that makes the painting memorable:
+    // a wide sand or sky can outvote the teal water that gives it its character. So the
+    // glow takes whichever of the two clusters is more colourful, while the wall keeps
+    // the dominant one, which is usually the quieter, more liveable tint.
+    const vividness = (c) => (c ? c[1] * (1 - Math.abs(c[2] - 0.55) * 1.1) : -1);
+    const primary = [h, s, l];
+    // weigh how much of the painting a colour covers against how colourful it is, so a small
+    // vivid patch can't outvote the sea, and a wide pale sand can't outvote the sea either
+    const standing = (c, area) => (c ? Math.sqrt(Math.max(area, 0)) * vividness(c) : -1);
+    const feature = standing(second, secondArea) > standing(primary, primaryArea) * 1.1 ? second : primary;
+    const [fh, fs, fl] = feature;
+    const other = feature === primary ? second : primary;
+    const muted = vivid < 0.04 || fs < 0.15;
     return {
-      h, s, l, muted,
-      accent: hsl(h, clamp(s, 0.4, 0.75), clamp(l, 0.42, 0.6)),
-      // back-glow in the painting's own strongest hue; near-grey paintings get warm lamplight
-      glow: muted ? hsl(38, 0.6, 0.72) : hsl(h, clamp(s * 1.3, 0.55, 0.85), 0.64),
-      wall: hsl(h, muted ? 0.08 : 0.2, 0.91),
+      h, s, l, muted, hFeature: fh,
+      accent: hsl(fh, clamp(fs, 0.4, 0.78), clamp(fl, 0.42, 0.6)),
+      accent2: other ? hsl(other[0], clamp(other[1], 0.4, 0.75), clamp(other[2], 0.42, 0.62)) : null,
+      // back-glow in that colour; near-grey paintings get warm lamplight instead
+      glow: muted ? hsl(38, 0.6, 0.72) : hsl(fh, clamp(fs * 1.25, 0.6, 0.9), clamp(fl * 0.75 + 0.22, 0.58, 0.72)),
+      // the wall carries a clear hint of the painting without competing with it
+      wall: muted ? hsl(38, 0.12, 0.9) : hsl(h, clamp(s * 0.8, 0.2, 0.42), h > 20 && h < 95 ? 0.9 : 0.885),
     };
   }
   const paletteCache = new Map();
