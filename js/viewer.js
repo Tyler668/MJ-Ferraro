@@ -376,16 +376,22 @@
     const roomEl = $(".roomview", el), hangEl = $(".hangview", el), img = $(".slab__front img", el);
     $(".viewer__hint", el).style.display = md === "room" ? "none" : "";
     loupe(null);
-    roomEl.classList.toggle("is-on", md === "room");
+
+    // clear any in-flight zoom first, so the measurements below aren't mid-animation
+    roomEl.getAnimations().forEach((a) => a.cancel());
+    hangEl.getAnimations().forEach((a) => a.cancel());
 
     // the painting is the anchor: the room zooms out from it, and back in
     const stage = $(".viewer__stage", el).getBoundingClientRect();
     const ir = img.getBoundingClientRect();
     const ok = !same && animate && !reduceMotion && roomGeo && ir.width > 0;
     if (!ok) {
+      roomEl.classList.toggle("is-on", md === "room");
       hangEl.style.opacity = md === "room" ? 0 : 1;
       return;
     }
+    // keep the room rendered for the whole zoom; it is hidden once the way back finishes
+    roomEl.classList.add("is-on");
     const ccx = ir.left - stage.left + ir.width / 2, ccy = ir.top - stage.top + ir.height / 2;
     const k = ir.width / roomGeo.w;                       // how much bigger the close view is
     const dx = ccx - roomGeo.cx, dy = ccy - roomGeo.cy;
@@ -400,7 +406,8 @@
       hangEl.animate([{ transform: "none", opacity: 1 }, { opacity: 0, offset: 0.55 }, { transform: shrunk, opacity: 0 }], { duration: dur, easing: ease })
         .onfinish = () => { if (mode === "room") hangEl.style.opacity = 0; };
     } else {
-      roomEl.animate([{ transform: "none", opacity: 1 }, { opacity: 0, offset: 0.65 }, { transform: zoomed, opacity: 0 }], { duration: dur, easing: ease });
+      roomEl.animate([{ transform: "none", opacity: 1 }, { opacity: 1, offset: 0.55 }, { transform: zoomed, opacity: 0 }], { duration: dur, easing: ease })
+        .onfinish = () => { if (mode === "close") roomEl.classList.remove("is-on"); };
       hangEl.animate([{ transform: shrunk, opacity: 0 }, { opacity: 1, offset: 0.45 }, { transform: "none", opacity: 1 }], { duration: dur, easing: ease });
     }
   }
