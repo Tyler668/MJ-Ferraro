@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260917152738">
+  <link rel="stylesheet" href="css/style.css?v=20260917153608">
 </head>
 <body data-page="gallery">
   <header id="site-header"></header>
@@ -34,39 +34,39 @@
           </div>
           <div class="legend"><span class="count" id="count"></span><span><i style="background:var(--sold)"></i>Sold</span></div>
         </div>
-        <div class="chips" id="room-filter" role="group" aria-label="Room" style="margin-top:.9rem"></div>
+        <div class="chips" id="subject-filter" role="group" aria-label="Subject" style="margin-top:.9rem"></div>
       </div>
     </div>
 
     <section class="wrap">
-      <p class="room-note" id="room-note"></p>
+      <p class="subject-note" id="subject-note"></p>
       <div class="wall" id="wall"></div>
     </section>
   </main>
 
   <footer id="site-footer"></footer>
 
-  <script src="js/data.js?v=20260917152738"></script>
-  <script src="js/image-meta.js?v=20260917152738"></script>
-  <script src="js/site.js?v=20260917152738"></script>
-  <script src="js/viewer.js?v=20260917152738"></script>
+  <script src="js/data.js?v=20260917153608"></script>
+  <script src="js/image-meta.js?v=20260917153608"></script>
+  <script src="js/site.js?v=20260917153608"></script>
+  <script src="js/viewer.js?v=20260917153608"></script>
   <script>
   (function () {
     const { $, $$, esc, thumb, ratio, color, sizeText, statusText, lazyFade } = window.Site;
-    const WORKS = window.WORKS, ROOMS = window.ROOMS;
+    const WORKS = window.WORKS, CATEGORIES = window.CATEGORIES;
     const wall = $("#wall");
-    const state = { status: "all", room: "all" };
+    const state = { status: "all", subject: "all" };
 
-    // read #status=available&room=shore
+    // read #status=available&subject=shore
     const readHash = () => {
       const p = new URLSearchParams(location.hash.slice(1));
       state.status = ["available", "sold"].includes(p.get("status")) ? p.get("status") : "all";
-      state.room = ROOMS.some((r) => r.id === p.get("room")) ? p.get("room") : "all";
+      state.subject = CATEGORIES.some((c) => c.id === p.get("subject")) ? p.get("subject") : "all";
     };
     const writeHash = () => {
       const p = new URLSearchParams();
       if (state.status !== "all") p.set("status", state.status);
-      if (state.room !== "all") p.set("room", state.room);
+      if (state.subject !== "all") p.set("subject", state.subject);
       history.replaceState(null, "", p.toString() ? "#" + p : location.pathname);
     };
 
@@ -80,7 +80,7 @@
     const tiles = $$(".tile", wall);
     tiles.forEach((t) => lazyFade($("img", t)));
 
-    const visibleWorks = () => WORKS.filter((w) => (state.status === "all" || w.status === state.status) && (state.room === "all" || w.room === state.room));
+    const visibleWorks = () => WORKS.filter((w) => (state.status === "all" || w.status === state.status) && (state.subject === "all" || w.category === state.subject));
 
     function layout() {
       const W = wall.clientWidth;
@@ -124,17 +124,17 @@
     };
     $$("button", seg).forEach((b) => b.addEventListener("click", () => { state.status = b.dataset.status; update(); }));
 
-    // room chips
-    const chips = $("#room-filter");
-    chips.innerHTML = `<button class="chip" type="button" data-room="all">All rooms <small>${WORKS.length}</small></button>` +
-      ROOMS.map((r) => `<button class="chip" type="button" data-room="${r.id}">${esc(r.name)} <small>${WORKS.filter((w) => w.room === r.id).length}</small></button>`).join("");
-    $$(".chip", chips).forEach((b) => b.addEventListener("click", () => { state.room = b.dataset.room; update(); }));
+    // subject chips
+    const chips = $("#subject-filter");
+    chips.innerHTML = `<button class="chip" type="button" data-subject="all">All subjects <small>${WORKS.length}</small></button>` +
+      CATEGORIES.map((c) => `<button class="chip" type="button" data-subject="${c.id}">${esc(c.name)} <small>${WORKS.filter((w) => w.category === c.id).length}</small></button>`).join("");
+    $$(".chip", chips).forEach((b) => b.addEventListener("click", () => { state.subject = b.dataset.subject; update(); }));
 
     function update() {
       $$("button", seg).forEach((b) => b.setAttribute("aria-pressed", b.dataset.status === state.status));
-      $$(".chip", chips).forEach((b) => b.setAttribute("aria-pressed", b.dataset.room === state.room));
-      const r = ROOMS.find((x) => x.id === state.room);
-      $("#room-note").textContent = r ? r.blurb : "";
+      $$(".chip", chips).forEach((b) => b.setAttribute("aria-pressed", b.dataset.subject === state.subject));
+      const c = CATEGORIES.find((x) => x.id === state.subject);
+      $("#subject-note").textContent = c ? c.blurb : "";
       movePill(); layout(); writeHash();
     }
 

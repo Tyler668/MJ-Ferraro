@@ -1,4 +1,4 @@
-/* Home page: hero slideshow, coverflow, rooms, teasers */
+/* Home page: hero slideshow, coverflow, subjects, teasers */
 (function () {
   const { $, $$, esc, thumb, full, ratio, sizeText, reduceMotion } = window.Site;
   const WORKS = window.WORKS;
@@ -82,7 +82,7 @@
   }).observe(art);
 
   /* ---------------- Marquee ---------------- */
-  const words = [...window.ROOMS.map((r) => [r.name, `gallery.html#room=${r.id}`]), ["Pet Portraits", "commissions.html"], ["Pasta & Paint", "pasta-and-paint.html"], ["Painted Keepsakes", "commissions.html#keepsakes"]];
+  const words = [...window.CATEGORIES.map((c) => [c.name, `gallery.html#subject=${c.id}`]), ["Pet Portraits", "commissions.html"], ["Pasta & Paint", "pasta-and-paint.html"], ["Painted Keepsakes", "commissions.html#keepsakes"]];
   const run = words.map(([t, h]) => `<span class="marquee__item"><a href="${h}" tabindex="-1">${esc(t)}</a><i class="marquee__dot"></i></span>`).join("");
   $("#marquee").innerHTML = run + run;
 
@@ -208,15 +208,15 @@
   sizeCards();
 
   /* ---------------- Rooms ---------------- */
-  $("#rooms").innerHTML = window.ROOMS.map((r, i) => {
-    const inRoom = WORKS.filter((w) => w.room === r.id);
-    const avail = inRoom.filter((w) => w.status === "available").length;
-    return `<a class="room reveal" style="--d:${i * 0.08}s" href="gallery.html#room=${r.id}">
-      <div class="room__fan">${r.cover.map((s) => `<span><img src="${thumb(s)}" alt="" loading="lazy"></span>`).join("")}</div>
-      <h3>${esc(r.name)}</h3>
-      <p>${esc(r.blurb)}</p>
-      <div class="room__foot"><span>${inRoom.length} works · ${avail} available</span>
-        <span class="room__arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></div>
+  $("#subjects").innerHTML = window.CATEGORIES.map((c, i) => {
+    const inCat = WORKS.filter((w) => w.category === c.id);
+    const avail = inCat.filter((w) => w.status === "available").length;
+    return `<a class="subject-card reveal" style="--d:${i * 0.08}s" href="gallery.html#subject=${c.id}">
+      <div class="subject-card__fan">${c.cover.map((s) => `<span><img src="${thumb(s)}" alt="" loading="lazy"></span>`).join("")}</div>
+      <h3>${esc(c.name)}</h3>
+      <p>${esc(c.blurb)}</p>
+      <div class="subject-card__foot"><span>${inCat.length} works · ${avail} available</span>
+        <span class="subject-card__arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></div>
     </a>`;
   }).join("");
 

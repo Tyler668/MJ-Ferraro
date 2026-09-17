@@ -29,7 +29,7 @@
     meta: (slug) => META[slug] || [800, 600, "#8a8278"],
     ratio(slug) { const m = Site.meta(slug); return m[0] / m[1]; },
     color: (slug) => Site.meta(slug)[2],
-    room: (id) => (window.ROOMS || []).find((r) => r.id === id),
+    category: (id) => (window.CATEGORIES || []).find((c) => c.id === id),
     sizeText(w) {
       if (w.sizeLabel) return w.sizeLabel;
       if (!w.size) return null;
@@ -65,6 +65,7 @@
     ["commissions.html", "Commissions", "commissions"],
     ["pasta-and-paint.html", "Pasta & Paint", "pasta"],
     ["about.html", "About", "about"],
+    ["contact.html", "Contact", "contact"],
   ];
   const mark = `<svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
       <path d="M24 4c11 0 20 8 20 18 0 7-5 10-10 10h-4c-2.5 0-4 1.8-4 4 0 1 .6 2 .6 3.2C26.6 42 25.4 44 23 44 12 44 4 35 4 24S13 4 24 4z" fill="#e8dcc6"/>
@@ -81,7 +82,6 @@
       <button class="nav-toggle" aria-label="Menu" aria-expanded="false" aria-controls="nav"><span></span><span></span><span></span></button>
       <nav class="nav" id="nav">
         ${links.map(([href, label, key]) => `<a href="${href}"${key === page ? ' aria-current="page"' : ""}>${label}</a>`).join("")}
-        <a class="nav__cta" href="contact.html"${page === "contact" ? ' aria-current="page"' : ""}>Get in touch</a>
       </nav></div>`;
     const toggle = $(".nav-toggle", header);
     toggle.addEventListener("click", () => {
@@ -108,8 +108,8 @@
         </div>` : ""}
         <div class="footer-grid">
           <div>${brand}<p style="margin-top:1.2rem;max-width:32ch;font-size:.92rem">Original paintings of the coast, gardens and home.</p></div>
-          <div><h4>Explore</h4><ul>${links.map(([h, l]) => `<li><a href="${h}">${l}</a></li>`).join("")}<li><a href="contact.html">Contact</a></li></ul></div>
-          <div><h4>Rooms</h4><ul>${(window.ROOMS || []).map((r) => `<li><a href="gallery.html#room=${r.id}">${r.name}</a></li>`).join("")}</ul></div>
+          <div><h4>Explore</h4><ul>${links.map(([h, l]) => `<li><a href="${h}">${l}</a></li>`).join("")}</ul></div>
+          <div><h4>Subjects</h4><ul>${(window.CATEGORIES || []).map((c) => `<li><a href="gallery.html#subject=${c.id}">${c.name}</a></li>`).join("")}</ul></div>
           <div><h4>Say hello</h4><ul>
             <li><a href="mailto:${S.email}">${S.email}</a></li>
             <li><a href="tel:${S.phone.replace(/[^\d+]/g, "")}">${S.phone}</a></li>

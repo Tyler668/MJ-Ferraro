@@ -3,7 +3,7 @@
    derived from the painting, and a details panel.
    Usage: Viewer.open(items, index, sourceElement)                            */
 (function () {
-  const { $, $$, ICON, esc, thumb, full, ratio, color, room, sizeText, statusText, reduceMotion, hsl } = window.Site;
+  const { $, $$, ICON, esc, thumb, full, ratio, color, category, sizeText, statusText, reduceMotion, hsl } = window.Site;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const lerp = (a, b, t) => a + (b - a) * t;
 
@@ -446,13 +446,13 @@
   function renderInfo() {
     const it = items[index];
     const info = $(".viewer__info", el);
-    const rm = it.room ? room(it.room) : null;
+    const cat = it.category ? category(it.category) : null;
     const size = sizeText(it);
     const specs = [
       size && ["Size", size],
       it.medium && ["Medium", esc(it.medium)],
       it.status && ["Status", `<span class="status status--${it.status}">${statusText(it)}</span>`],
-      rm && ["Room", `<a href="gallery.html#room=${rm.id}">${rm.name}</a>`],
+      cat && ["Subject", `<a href="gallery.html#subject=${cat.id}">${cat.name}</a>`],
     ].filter(Boolean);
 
     let cta = it.cta;
@@ -461,7 +461,7 @@
 
     const alts = it.alts && it.alts.length ? [it.img, ...it.alts] : null;
     info.innerHTML = `
-      <span class="eyebrow">${esc(it.kind || (rm ? rm.name : "Original painting"))}</span>
+      <span class="eyebrow">${esc(it.kind || (cat ? cat.name : "Original painting"))}</span>
       <h2 id="viewer-title">${esc(it.title)}</h2>
       ${it.subtitle ? `<div class="viewer__subtitle">${esc(it.subtitle)}</div>` : ""}
       ${it.place ? `<div class="viewer__place">${ICON.pin}${esc(it.place)}</div>` : ""}
