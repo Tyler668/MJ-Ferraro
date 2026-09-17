@@ -465,7 +465,7 @@ p { margin: 0 0 1em; }
 .room-note { max-width: 60ch; color: var(--ink-soft); min-height: 1.6em; margin: 0 0 1.2rem; font-family: var(--font-display); font-style: italic; font-size: 1.1rem; transition: opacity .4s; }
 .count { font-size: .82rem; color: var(--ink-soft); letter-spacing: .05em; }
 
-.wall { position: relative; transition: height .7s var(--ease-out); margin-bottom: 40px; }
+.wall { position: relative; transition: height .7s var(--ease-out); margin-bottom: clamp(80px, 9vw, 130px); }
 .tile {
   position: absolute; top: 0; left: 0; padding: 0; border: 0; background: var(--c, var(--paper-3));
   cursor: zoom-in; border-radius: 2px;
