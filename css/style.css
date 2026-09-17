@@ -22,7 +22,7 @@
   --accent: #7d5f33;        /* driftwood: deep enough for small text on paper */
   --accent-deep: #5f4826;
   --accent-soft: #c9ab7a;    /* light sand, for brush strokes */
-  --brush: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20120%2018%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M1.6%2013C5%207.6%2013%204%2025%202.6c22-2.6%2045%20.8%2067%201.8%209%20.4%2018%20.3%2027-.6-1.2%204-5%206.6-11.4%207.8-12%202.2-25%201.6-37.6.8-16-1-32-1.8-47.6.6-7.4%201.2-14%203-19.8%205.4-1.6.6-3-.8-2-2.4z%27%20fill%3D%27%23c9ab7a%27%2F%3E%3Cpath%20d%3D%27M18%208.6c22-2.8%2045-2.6%2067-.8%27%20stroke%3D%27%23f6f0e5%27%20stroke-width%3D%272%27%20fill%3D%27none%27%20opacity%3D%27.42%27%2F%3E%3Cpath%20d%3D%27M7%2012c11-2.8%2023-4.4%2035-4.8%27%20stroke%3D%27%23f6f0e5%27%20stroke-width%3D%271.1%27%20fill%3D%27none%27%20opacity%3D%27.3%27%2F%3E%3Cpath%20d%3D%27M74%2010.6c10%20.6%2020%20.6%2030-.2%27%20stroke%3D%27%23f6f0e5%27%20stroke-width%3D%27.9%27%20fill%3D%27none%27%20opacity%3D%27.25%27%2F%3E%3C%2Fsvg%3E");
+  --brush: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20120%2014%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M2.5%2010.2C8%205.8%2018%203.2%2032%202.5c20-1%2040%201%2060%201.6%207%20.2%2014%20.1%2021-.4-2.4%203.2-7%205-14%205.6-13%201.2-27%200-40-.7-14-.8-28-1-41%20.6-6%20.7-11%201.8-15.5%203.4z%27%20fill%3D%27%23c9ab7a%27%2F%3E%3Cpath%20d%3D%27M26%205.6c18-1.4%2037-1.2%2055%20.2%27%20stroke%3D%27%23f6f0e5%27%20stroke-width%3D%271%27%20fill%3D%27none%27%20opacity%3D%27.42%27%2F%3E%3Cpath%20d%3D%27M12%208.6c10-2%2021-3%2032-3.2%27%20stroke%3D%27%23f6f0e5%27%20stroke-width%3D%27.6%27%20fill%3D%27none%27%20opacity%3D%27.3%27%2F%3E%3C%2Fsvg%3E");
   --gold: #b58a45;
   --sand: #d9c29b;
   --wall: #221e1b;
@@ -87,8 +87,7 @@ p { margin: 0 0 1em; }
   color: var(--accent);
   margin-bottom: 1.1rem;
 }
-.eyebrow::before { content: ""; width: 30px; height: 9px; flex: none;
-  background: var(--brush) no-repeat center/100% 100%; }
+.eyebrow::before { content: ""; width: 28px; height: 1.5px; background: currentColor; }
 .lede { font-size: clamp(1.05rem, 1.4vw, 1.2rem); color: var(--ink-2); max-width: 56ch; }
 .hand { font-family: var(--font-hand); font-weight: 500; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -148,7 +147,7 @@ p { margin: 0 0 1em; }
   font-size: 1.03rem; color: var(--ink-2); opacity: .68; transition: color .3s, opacity .3s;
 }
 .nav a::after {
-  content: ""; position: absolute; left: .55rem; right: .55rem; bottom: .04em; height: max(9px, .26em);
+  content: ""; position: absolute; left: .7rem; right: .7rem; bottom: .12em; height: max(7px, .18em);
   background: var(--brush) no-repeat center/100% 100%;
   clip-path: inset(0 100% 0 0); transition: clip-path .55s var(--ease-out);
 }
@@ -176,7 +175,7 @@ p { margin: 0 0 1em; }
   .nav-open .nav { clip-path: circle(150% at calc(100% - 38px) 38px); visibility: visible; }
   .nav a { font-family: var(--font-display); font-size: 2rem; padding: .35rem 1rem; opacity: .42; }
   .nav a:hover, .nav a[aria-current="page"] { opacity: 1; }
-  .nav a::after { bottom: 0; left: .8rem; right: .8rem; height: .3em; }
+  .nav a::after { bottom: .06em; left: 1rem; right: 1rem; }
   body.nav-open { overflow: hidden; }
 }
 
@@ -207,13 +206,9 @@ p { margin: 0 0 1em; }
 .hero__grid { display: grid; grid-template-columns: 1fr 1.08fr; gap: clamp(32px, 6vw, 90px); align-items: center; min-height: min(78vh, 760px); }
 .hero h1 { margin-bottom: .45em; }
 .hero h1 .underline { position: relative; display: inline-block; font-style: italic; color: var(--sea); }
-.hero h1 .underline svg { display: none; }
-.hero h1 .underline::after {
-  content: ""; position: absolute; left: -5%; width: 110%; bottom: -.02em; height: .36em;
-  background: var(--brush) no-repeat center/100% 100%;
-  clip-path: inset(0 100% 0 0); animation: paint-on 1.4s .8s var(--ease-out) forwards;
-}
-@keyframes paint-on { to { clip-path: inset(0 0 0 0); } }
+.hero h1 .underline svg { position: absolute; left: -4%; width: 108%; bottom: -.16em; height: .34em; overflow: visible; }
+.hero h1 .underline path { fill: none; stroke: var(--accent-soft); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 420; stroke-dashoffset: 420; animation: draw 1.6s .9s var(--ease-out) forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
 .hero .lede { margin-bottom: 2rem; }
 .hero__meta { display: flex; gap: 2.2rem; margin-top: 2.6rem; padding-top: 1.6rem; border-top: 1px solid rgba(29, 42, 51, .14); }
 .hero__meta div { display: flex; flex-direction: column; }
