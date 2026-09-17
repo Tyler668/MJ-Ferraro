@@ -712,10 +712,9 @@ body[data-page="gallery"] .page-hero .lede { margin-top: .45rem; }
 @media (max-width: 760px) { .keepsakes { grid-template-columns: 1fr 1fr; } .keepsakes .polaroid:nth-child(n) { margin-top: 0; } }
 
 .price-card { background: var(--paper-2); border-radius: 8px; padding: clamp(28px, 4vw, 48px); position: relative; overflow: hidden; }
-.price-card ul { list-style: none; padding: 0; margin: 1.2rem 0 1.6rem; }
-.price-card li { display: flex; align-items: baseline; gap: .8rem; padding: .7rem 0; font-size: 1.02rem; }
-.price-card li span:nth-child(2) { flex: 1; border-bottom: 1.5px dotted rgba(29,42,51,.3); transform: translateY(-4px); }
-.price-card li em { font-family: var(--font-display); color: var(--ink-soft); }
+.price-card p { color: var(--ink-2); }
+.price-card .checklist { margin: 1.1rem 0 1.4rem; }
+.price-card .checklist li { font-size: .98rem; }
 
 /* ==========================================================================
    PASTA & PAINT
