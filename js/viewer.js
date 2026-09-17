@@ -12,7 +12,7 @@
 
   let el, items = [], index = 0, source = null, sourceIndex = -1, lastFocus = null;
   let mode = "close", geo = null, roomGeo = null, raf = 0, open = false, pal = null, wallOverride = null;
-  const m = { rx: 0, ry: 0, trx: 0, try: 0, drx: 0, dry: 0, hover: false, dragging: false, lastX: 0, lastY: 0, idleAt: 0, kick: 0, kickT: 0 };
+  const m = { rx: 0, ry: 0, trx: 0, try: 0, hover: false, kick: 0, kickT: 0 };
 
   function build() {
     el = document.createElement("div");
@@ -60,7 +60,7 @@
             <button type="button" data-mode="close" aria-pressed="true" aria-label="Up close" title="Up close">${ICON.zoom}</button>
             <button type="button" data-mode="room" aria-pressed="false" aria-label="In a room" title="In a room">${ICON.sofa}</button>
           </div>
-          <p class="viewer__hint">${ICON.drag} Hover to magnify · drag to tilt</p>
+          <p class="viewer__hint">${ICON.zoom} Hover the painting to magnify</p>
         </div>
         <aside class="viewer__info"></aside>
       </div>
@@ -86,32 +86,17 @@
     stage.addEventListener("pointerenter", () => (m.hover = true));
     stage.addEventListener("pointerleave", () => { m.hover = false; loupe(null); });
     stage.addEventListener("pointermove", (e) => {
+      if (e.pointerType !== "mouse") return;
       const r = stage.getBoundingClientRect();
       const nx = (e.clientX - r.left) / r.width - 0.5, ny = (e.clientY - r.top) / r.height - 0.5;
-      if (m.dragging) {
-        m.dry = clamp(m.dry + (e.clientX - m.lastX) * 0.4, -60, 60);
-        m.drx = clamp(m.drx - (e.clientY - m.lastY) * 0.15, -16, 16);
-        m.lastX = e.clientX; m.lastY = e.clientY; m.idleAt = performance.now();
-      } else if (e.pointerType === "mouse") {
-        if (mode === "room") {
-          stage.style.cursor = overPainting(e) ? "zoom-in" : "";
-          return;
-        }
-        // over the painting: hold it nearly still and magnify; elsewhere: tilt towards the cursor
-        const onArt = loupe(e);
-        m.try = nx * (onArt ? 3 : 16); m.trx = -ny * (onArt ? 1.5 : 7);
+      if (mode === "room") {
+        stage.style.cursor = overPainting(e) ? "zoom-in" : "";
+        return;
       }
+      // over the painting: hold it nearly still and magnify; elsewhere: lean towards the cursor
+      const onArt = loupe(e);
+      m.try = nx * (onArt ? 3 : 16); m.trx = -ny * (onArt ? 1.5 : 7);
     });
-    stage.addEventListener("pointerdown", (e) => {
-      if (mode !== "close" || e.target.closest("button")) return;
-      m.dragging = true; m.lastX = e.clientX; m.lastY = e.clientY;
-      stage.setPointerCapture(e.pointerId); stage.classList.add("is-dragging");
-      loupe(null);
-      $(".viewer__hint", el).style.opacity = 0;
-    });
-    const end = () => { m.dragging = false; m.idleAt = performance.now(); stage.classList.remove("is-dragging"); };
-    stage.addEventListener("pointerup", end);
-    stage.addEventListener("pointercancel", end);
 
     document.addEventListener("keydown", (e) => { if (open) onKey(e); });
     addEventListener("resize", () => { if (open) { layout(true); renderRoom(); setMode(mode, false); } });
@@ -214,7 +199,7 @@
   const ZOOM = 2.6;
   function loupe(e) {
     const lens = $(".loupe", el);
-    if (!e || m.dragging || stepping) {
+    if (!e || stepping) {
       lens.classList.remove("is-on");
       $(".viewer__stage", el).classList.remove("is-magnifying");
       return false;
@@ -492,12 +477,10 @@
   const kick = (amt) => { if (!reduceMotion) { m.kick = amt; m.kickT = performance.now(); } };
   function tick(t) {
     if (!open) return;
-    if (mode === "room") { m.try = 0; m.trx = 0; m.dry = 0; m.drx = 0; }
-    else if (!m.hover && !m.dragging) { m.try = Math.sin(t / 2800) * 5; m.trx = Math.sin(t / 3600) * 1.5; }
-    if (!m.dragging && t - m.idleAt > 1800) { m.dry = lerp(m.dry, 0, 0.025); m.drx = lerp(m.drx, 0, 0.03); }
-    const k = m.dragging ? 0.35 : 0.06;
-    m.ry = lerp(m.ry, m.try + m.dry, k);
-    m.rx = lerp(m.rx, m.trx + m.drx, k);
+    if (mode === "room") { m.try = 0; m.trx = 0; }
+    else if (!m.hover) { m.try = Math.sin(t / 2800) * 5; m.trx = Math.sin(t / 3600) * 1.5; }
+    m.ry = lerp(m.ry, m.try, 0.06);
+    m.rx = lerp(m.rx, m.trx, 0.06);
     const since = Math.max(0, t - m.kickT);
     const isPrint = geo && geo.kind === "print";
     const sway = reduceMotion || mode === "room" ? 0 : window.Site.swing(t) * (isPrint ? 0.6 : 1);
@@ -532,7 +515,7 @@
     items = list.map((x) => ({ ...x })); index = i; source = src || null; sourceIndex = i;
     lastFocus = document.activeElement;
     open = true; setMode("close", false);
-    Object.assign(m, { rx: 0, ry: 0, trx: 0, try: 0, drx: 0, dry: 0, dragging: false, kick: 0 });
+    Object.assign(m, { rx: 0, ry: 0, trx: 0, try: 0, kick: 0 });
     $(".viewer__hint", el).style.opacity = "";
     document.documentElement.style.overflow = "hidden";
     el.classList.add("is-open");
@@ -603,7 +586,6 @@
     setTimeout(() => {
       index = (index + dir + items.length) % items.length;
       renderInfo(); layout(); renderRoom(); setMode(mode, false);
-      m.dry = 0; m.drx = 0;
       wrap.getAnimations().forEach((a) => a.cancel());
       scene.getAnimations().forEach((a) => a.cancel());
       shadows.getAnimations().forEach((a) => a.cancel());
