@@ -33,7 +33,7 @@
     sizeText(w) {
       if (w.sizeLabel) return w.sizeLabel;
       if (!w.size) return null;
-      return `${w.size[0]} × ${w.size[1]} in`;
+      return `${w.size[0]} × ${w.size[1]}″`;
     },
     statusText(w) {
       return { available: "Available", sold: "Sold", nfs: "Not for sale" }[w.status] || "";

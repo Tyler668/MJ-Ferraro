@@ -36,7 +36,7 @@ window.WORKS = [
     blurb: "A sun-bleached boardwalk crosses the dunes to a small house at the water's edge." },
   { id: "stormy-light", title: "Stormy Light", img: "stormy-light-36x36-acrylic-on-canvas-framed", size: [36, 36], medium: "Acrylic on canvas, framed", room: "shore", status: "available", featured: true,
     blurb: "A lighthouse stands against heavy surf and dark storm clouds." },
-  { id: "under-the-sea", title: "Under the Sea", img: "under-the-sea-4x6ft-mixed-media-on-gallery-wrapped-canvas", size: [72, 48], sizeLabel: "4 × 6 ft", medium: "Mixed media on gallery-wrapped canvas", room: "flora", status: "available", featured: true,
+  { id: "under-the-sea", title: "Under the Sea", img: "under-the-sea-4x6ft-mixed-media-on-gallery-wrapped-canvas", size: [72, 48], sizeLabel: "48 × 72″", medium: "Mixed media on gallery-wrapped canvas", room: "flora", status: "available", featured: true,
     blurb: "Sea turtles glide above a textured coral reef in this large mixed media piece." },
   { id: "sandy-shores", title: "Sandy Shores", img: "sandy-shores-24x30-acrylic-on-gallery-wrapped-canvas", size: [30, 24], medium: "Acrylic on gallery-wrapped canvas", room: "shore", status: "available", featured: true,
     blurb: "A dune fence curves toward the water as the sun sets." },
