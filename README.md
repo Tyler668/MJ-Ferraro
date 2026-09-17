@@ -7,7 +7,14 @@ python tools/serve.py
 ```
 
 That serves the site at http://localhost:8765 with caching turned off, so edits show up on a
-plain reload. After changing CSS or JS, run `python tools/bump.py` to re-stamp the `?v=`
+plain reload.
+
+**Showing it to someone else on the same wifi:** the server prints a second address on startup,
+like `http://192.168.10.139:8765`. Typing that into a phone or tablet on the same network opens
+the site (`localhost` won't work from another device: it means *that* device). The computer has to
+stay awake and on the same wifi. If the other device can't connect, Windows Firewall is blocking
+Python: the startup message prints the one-line `New-NetFirewallRule` command to fix it, which
+needs an admin PowerShell. Use `--local` to go back to this-computer-only. After changing CSS or JS, run `python tools/bump.py` to re-stamp the `?v=`
 version on the asset links; that also stops browsers serving stale files after a deploy.
 
 ## Editing content
