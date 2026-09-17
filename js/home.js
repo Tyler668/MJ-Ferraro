@@ -6,9 +6,6 @@
   const available = WORKS.filter((w) => w.status === "available")
     .sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
 
-  $("#stat-available").textContent = available.length;
-  $("#stat-total").textContent = WORKS.length;
-
   /* ---------------- Hero: hanging canvas slideshow ---------------- */
   const heroWorks = ["a-storm-is-brewing", "boardwalk-to-paradise", "birdhouses-of-dauphin-island", "kaleidoscope-beach", "walking-on-top-of-the-world", "blue-heron-family"].map(byId);
   const canvas = $("#hero-canvas"), dots = $("#hero-dots"), cap = $("#hero-caption");

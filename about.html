@@ -1,3 +1,5 @@
+<!-- PARKED: not linked from the site nav, kept for when Peg has a photo and a bio.
+     To bring it back, re-add ["about.html", "About", "about"] to the links list in js/site.js. -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260917155919">
+  <link rel="stylesheet" href="css/style.css?v=20260917160335">
 </head>
 <body data-page="about">
   <header id="site-header"></header>
@@ -40,12 +42,6 @@
       </div>
     </section>
 
-    <section class="section--tight">
-      <div class="wrap">
-        <div class="stats" id="stats"></div>
-      </div>
-    </section>
-
     <section class="section">
       <div class="wrap">
         <div class="section-head">
@@ -62,29 +58,14 @@
 
   <footer id="site-footer"></footer>
 
-  <script src="js/data.js?v=20260917155919"></script>
-  <script src="js/image-meta.js?v=20260917155919"></script>
-  <script src="js/site.js?v=20260917155919"></script>
-  <script src="js/viewer.js?v=20260917155919"></script>
+  <script src="js/data.js?v=20260917160335"></script>
+  <script src="js/image-meta.js?v=20260917160335"></script>
+  <script src="js/site.js?v=20260917160335"></script>
+  <script src="js/viewer.js?v=20260917160335"></script>
   <script>
   (function () {
-    const { $, $$, esc, thumb, reduceMotion } = window.Site;
+    const { $, $$, esc, thumb } = window.Site;
     const W = window.WORKS;
-    const stats = [
-      [W.length, "original works in the gallery"],
-      [W.filter((w) => w.status === "available").length, "paintings available now"],
-      [window.PETS.length, "pet portraits"],
-      [window.CATEGORIES.length, "subjects"],
-    ];
-    $("#stats").innerHTML = stats.map(([n, l], i) => `<div class="stat reveal" style="--d:${i * 0.08}s"><strong data-n="${n}">0</strong><span>${l}</span></div>`).join("");
-    const io = new IntersectionObserver((es) => es.forEach((e) => {
-      if (!e.isIntersecting) return; io.unobserve(e.target);
-      const el = e.target, n = +el.dataset.n, t0 = performance.now();
-      const tick = (t) => { const k = Math.min(1, (t - t0) / 1400); el.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(tick); };
-      reduceMotion ? (el.textContent = n) : requestAnimationFrame(tick);
-    }), { threshold: 0.6 });
-    $$("#stats strong").forEach((s) => io.observe(s));
-
     const mediums = [
       ["Acrylic", "Most of her work", "blue-heron-family"],
       ["Oil", "Thick, textured paint", "first-bloom"],
