@@ -11,7 +11,7 @@
   const WALLS = [["Matched to painting", null], ["Linen", "#ebe4d6"], ["Sea glass", "#d3e0d8"], ["Harbor", "#3b4f5c"], ["Blush", "#eedbd1"]];
 
   let el, items = [], index = 0, source = null, sourceIndex = -1, lastFocus = null;
-  let mode = "close", geo = null, raf = 0, open = false, pal = null, wallOverride = null;
+  let mode = "close", geo = null, roomGeo = null, raf = 0, open = false, pal = null, wallOverride = null;
   const m = { rx: 0, ry: 0, trx: 0, try: 0, drx: 0, dry: 0, hover: false, dragging: false, lastX: 0, lastY: 0, idleAt: 0, kick: 0, kickT: 0 };
 
   function build() {
@@ -52,10 +52,9 @@
             <div class="roomview__note"></div>
           </div>
           <div class="loupe" aria-hidden="true"></div>
-          <span class="viewer__label"></span>
           <div class="viewer__modes" role="group" aria-label="View">
-            <button type="button" data-mode="close" aria-pressed="true">${ICON.frame}<span>Up close</span></button>
-            <button type="button" data-mode="room" aria-pressed="false">${ICON.sofa}<span>In a room</span></button>
+            <button type="button" data-mode="close" aria-pressed="true" aria-label="Up close" title="Up close">${ICON.zoom}</button>
+            <button type="button" data-mode="room" aria-pressed="false" aria-label="In a room" title="In a room">${ICON.sofa}</button>
           </div>
           <p class="viewer__hint">${ICON.drag} Hover to magnify · drag to tilt</p>
         </div>
@@ -226,7 +225,7 @@
   function renderRoom() {
     const it = items[index];
     const scene = $(".roomview__scene", el);
-    if (!it.size || it.object || !pal || !geo) { scene.innerHTML = ""; return; }
+    if (!it.size || it.object || !pal || !geo) { scene.innerHTML = ""; roomGeo = null; return; }
     const { sw, sh } = geo;
     const [W, H] = it.size;
     const { h, muted } = pal;
@@ -248,6 +247,7 @@
     const books = [accent, sofa(0.45, 0.25), hsl(h + 40, sat(0.35), 0.66), "#ece4d4"];
     const wood = "#8c6a4c", woodDark = "#5b4331";
 
+    roomGeo = { ppi, cx: (cx) * ppi, cy: (fy - 34 - 8 - H / 2) * ppi, w: W * ppi };
     const frameIn = kind === "framed" ? 1.6 : kind === "paper" ? 1 : 0;
     const matIn = kind === "paper" ? Math.min(W, H) * 0.08 : 0;
     const px = cx - W / 2, py = fy - 34 - 8 - H;
@@ -369,13 +369,40 @@
     $$(".swatches button", el).forEach((b, i) => { b.style.background = WALLS[i][1] || hsl(h, sat(0.2), 0.89); });
   }
 
-  function setMode(md) {
+  function setMode(md, animate = true) {
+    const same = md === mode;
     mode = md;
     $$(".viewer__modes button", el).forEach((b) => b.setAttribute("aria-pressed", b.dataset.mode === md));
-    $(".roomview", el).classList.toggle("is-on", md === "room");
-    $(".hangview", el).style.opacity = md === "room" ? 0 : 1;
+    const roomEl = $(".roomview", el), hangEl = $(".hangview", el), img = $(".slab__front img", el);
     $(".viewer__hint", el).style.display = md === "room" ? "none" : "";
-    $(".viewer__label", el).style.opacity = md === "room" ? 0 : 1;
+    loupe(null);
+    roomEl.classList.toggle("is-on", md === "room");
+
+    // the painting is the anchor: the room zooms out from it, and back in
+    const stage = $(".viewer__stage", el).getBoundingClientRect();
+    const ir = img.getBoundingClientRect();
+    const ok = !same && animate && !reduceMotion && roomGeo && ir.width > 0;
+    if (!ok) {
+      hangEl.style.opacity = md === "room" ? 0 : 1;
+      return;
+    }
+    const ccx = ir.left - stage.left + ir.width / 2, ccy = ir.top - stage.top + ir.height / 2;
+    const k = ir.width / roomGeo.w;                       // how much bigger the close view is
+    const dx = ccx - roomGeo.cx, dy = ccy - roomGeo.cy;
+    const zoomed = `translate(${dx}px, ${dy}px) scale(${k})`;
+    const shrunk = `translate(${-dx / k}px, ${-dy / k}px) scale(${1 / k})`;
+    roomEl.style.transformOrigin = `${roomGeo.cx}px ${roomGeo.cy}px`;
+    hangEl.style.transformOrigin = `${ccx}px ${ccy}px`;
+    const ease = "cubic-bezier(.4,0,.2,1)", dur = 900;
+    hangEl.style.opacity = 1;
+    if (md === "room") {
+      roomEl.animate([{ transform: zoomed, opacity: 0 }, { opacity: 1, offset: 0.35 }, { transform: "none", opacity: 1 }], { duration: dur, easing: ease });
+      hangEl.animate([{ transform: "none", opacity: 1 }, { opacity: 0, offset: 0.55 }, { transform: shrunk, opacity: 0 }], { duration: dur, easing: ease })
+        .onfinish = () => { if (mode === "room") hangEl.style.opacity = 0; };
+    } else {
+      roomEl.animate([{ transform: "none", opacity: 1 }, { opacity: 0, offset: 0.65 }, { transform: zoomed, opacity: 0 }], { duration: dur, easing: ease });
+      hangEl.animate([{ transform: shrunk, opacity: 0 }, { opacity: 1, offset: 0.45 }, { transform: "none", opacity: 1 }], { duration: dur, easing: ease });
+    }
   }
 
   /* ---------- details panel ---------- */
@@ -418,10 +445,9 @@
       layout(); kick(1.4);
     }));
 
-    $(".viewer__label", el).textContent = it.object ? "" : "Now viewing";
     const canRoom = !!(it.size && !it.object);
     $(".viewer__modes", el).style.display = canRoom ? "" : "none";
-    if (!canRoom && mode === "room") setMode("close");
+    if (!canRoom && mode === "room") setMode("close", false);
   }
 
   /* ---------- sway, tilt and shadow ---------- */
@@ -465,7 +491,7 @@
     if (!el) build();
     items = list.map((x) => ({ ...x })); index = i; source = src || null; sourceIndex = i;
     lastFocus = document.activeElement;
-    open = true; setMode("close");
+    open = true; setMode("close", false);
     Object.assign(m, { rx: 0, ry: 0, trx: 0, try: 0, drx: 0, dry: 0, dragging: false, kick: 0 });
     $(".viewer__hint", el).style.opacity = "";
     document.documentElement.style.overflow = "hidden";

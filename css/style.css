@@ -519,7 +519,7 @@ p { margin: 0 0 1em; }
     radial-gradient(ellipse 95% 85% at 50% 45%, transparent 55%, rgba(60, 44, 28, .16));
 }
 
-.hangview { position: absolute; inset: 0; perspective: 1600px; perspective-origin: 50% 30%; transition: opacity .5s; }
+.hangview { position: absolute; inset: 0; perspective: 1600px; perspective-origin: 50% 30%; will-change: transform, opacity; }
 .hangview .hang-glow {
   left: 50%; top: calc(var(--top) + var(--ch) / 2);
   width: calc(var(--cw) * 2 + 220px); height: calc(var(--ch) * 1.9 + 200px);
@@ -581,8 +581,8 @@ p { margin: 0 0 1em; }
 .flyer { position: fixed; z-index: 950; pointer-events: none; object-fit: cover; will-change: transform; transform-origin: 0 0; }
 
 /* in a room */
-.roomview { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .6s, visibility 0s .6s; z-index: 1; background: var(--wall); }
-.roomview.is-on { opacity: 1; visibility: visible; transition: opacity .6s; }
+.roomview { position: absolute; inset: 0; opacity: 0; visibility: hidden; z-index: 1; background: var(--wall); will-change: transform, opacity; }
+.roomview.is-on { opacity: 1; visibility: visible; }
 .roomview__scene, .roomview__scene svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .roomview__note { position: absolute; left: 50%; top: 66px; transform: translateX(-50%); font-size: .74rem; letter-spacing: .08em; color: rgba(29,42,51,.65); white-space: nowrap; background: rgba(255,255,255,.45); padding: .2rem .75rem; border-radius: 99px; }
 .roomview__note.is-dark { color: rgba(255,255,255,.85); background: rgba(0,0,0,.2); }
@@ -599,14 +599,12 @@ p { margin: 0 0 1em; }
 }
 .loupe.is-on { opacity: 1; transform: none; }
 .viewer__stage.is-magnifying { cursor: none; }
-@media (hover: none) { .loupe { display: none; } }
 .viewer__modes { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); display: flex; padding: 4px; border-radius: 99px; background: rgba(29,42,51,.72); backdrop-filter: blur(8px); z-index: 5; }
-.viewer__modes button { white-space: nowrap; border: 0; background: none; color: rgba(255,255,255,.75); padding: .5rem 1rem; border-radius: 99px; font-size: .82rem; cursor: pointer; display: flex; gap: .45rem; align-items: center; transition: background .3s, color .3s; }
-.viewer__modes button svg { width: 16px; height: 16px; }
+.viewer__modes button { border: 0; background: none; color: rgba(255,255,255,.75); width: 46px; height: 38px; border-radius: 99px; cursor: pointer; display: grid; place-items: center; transition: background .3s, color .3s; }
+.viewer__modes button svg { width: 19px; height: 19px; }
 .viewer__modes button[aria-pressed="true"] { background: var(--paper); color: var(--ink); }
 .viewer__hint { position: absolute; left: 24px; bottom: 30px; margin: 0; font-size: .75rem; letter-spacing: .08em; color: rgba(29,42,51,.5); display: flex; gap: .5rem; align-items: center; transition: opacity .5s; pointer-events: none; z-index: 2; }
 .viewer__hint svg { width: 18px; }
-.viewer__label { position: absolute; top: 26px; left: 28px; z-index: 5; color: rgba(29,42,51,.5); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; transition: opacity .4s; }
 
 .viewer__info {
   position: relative; z-index: 2; background: var(--paper); color: var(--ink);
@@ -656,7 +654,6 @@ p { margin: 0 0 1em; }
   .viewer.is-shown .viewer__info { opacity: 1; }
   .viewer__close { right: 14px; top: 14px; }
   .viewer__hint { display: none; }
-  .viewer__label { left: 18px; top: 28px; }
   .roomview__note { top: 60px; font-size: .68rem; }
 }
 
