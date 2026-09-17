@@ -69,7 +69,7 @@
   ];
   const mark = `<svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
       <path d="M24 4c11 0 20 8 20 18 0 7-5 10-10 10h-4c-2.5 0-4 1.8-4 4 0 1 .6 2 .6 3.2C26.6 42 25.4 44 23 44 12 44 4 35 4 24S13 4 24 4z" fill="#e8dcc6"/>
-      <circle cx="15" cy="20" r="3.6" fill="#3f6f8c"/><circle cx="23" cy="13" r="3.6" fill="#2c5b6b"/>
+      <circle cx="15" cy="20" r="3.6" fill="#7d5f33"/><circle cx="23" cy="13" r="3.6" fill="#2c5b6b"/>
       <circle cx="33" cy="16" r="3.6" fill="#b58a45"/><circle cx="13" cy="30" r="3.6" fill="#8db3a7"/>
     </svg>`;
   const brand = `<a class="brand" href="index.html" aria-label="${Site.esc(S.brand)} home">${mark}

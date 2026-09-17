@@ -1,6 +1,6 @@
 /* ==========================================================================
    Paintings by Peg: main stylesheet
-   Palette: sea-salt linen, harbor ink, sea glass, coastal blue, weathered gold
+   Palette: sea-salt linen, harbor ink, sea glass, driftwood & sand
    ========================================================================== */
 
 @view-transition { navigation: auto; }
@@ -19,9 +19,10 @@
   --sea-deep: #173845;
   --seaglass: #8db3a7;
   --seaglass-soft: #d4e3dc;
-  --accent: #3f6f8c;        /* deep enough for small text on paper */
-  --accent-deep: #2d5266;
-  --accent-soft: #74a7c4;    /* brush strokes and other decoration */
+  --accent: #7d5f33;        /* driftwood: deep enough for small text on paper */
+  --accent-deep: #5f4826;
+  --accent-soft: #c9ab7a;    /* light sand, for brush strokes */
+  --brush: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20120%2018%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M1.6%2013C5%207.6%2013%204%2025%202.6c22-2.6%2045%20.8%2067%201.8%209%20.4%2018%20.3%2027-.6-1.2%204-5%206.6-11.4%207.8-12%202.2-25%201.6-37.6.8-16-1-32-1.8-47.6.6-7.4%201.2-14%203-19.8%205.4-1.6.6-3-.8-2-2.4z%27%20fill%3D%27%23c9ab7a%27%2F%3E%3Cpath%20d%3D%27M18%208.6c22-2.8%2045-2.6%2067-.8%27%20stroke%3D%27%23f6f0e5%27%20stroke-width%3D%272%27%20fill%3D%27none%27%20opacity%3D%27.42%27%2F%3E%3Cpath%20d%3D%27M7%2012c11-2.8%2023-4.4%2035-4.8%27%20stroke%3D%27%23f6f0e5%27%20stroke-width%3D%271.1%27%20fill%3D%27none%27%20opacity%3D%27.3%27%2F%3E%3Cpath%20d%3D%27M74%2010.6c10%20.6%2020%20.6%2030-.2%27%20stroke%3D%27%23f6f0e5%27%20stroke-width%3D%27.9%27%20fill%3D%27none%27%20opacity%3D%27.25%27%2F%3E%3C%2Fsvg%3E");
   --gold: #b58a45;
   --sand: #d9c29b;
   --wall: #221e1b;
@@ -86,7 +87,8 @@ p { margin: 0 0 1em; }
   color: var(--accent);
   margin-bottom: 1.1rem;
 }
-.eyebrow::before { content: ""; width: 28px; height: 1.5px; background: currentColor; }
+.eyebrow::before { content: ""; width: 30px; height: 9px; flex: none;
+  background: var(--brush) no-repeat center/100% 100%; }
 .lede { font-size: clamp(1.05rem, 1.4vw, 1.2rem); color: var(--ink-2); max-width: 56ch; }
 .hand { font-family: var(--font-hand); font-weight: 500; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -129,22 +131,22 @@ p { margin: 0 0 1em; }
   -webkit-backdrop-filter: blur(12px) saturate(1.2);
   box-shadow: 0 1px 0 rgba(29, 42, 51, .08);
 }
-.site-header__inner { display: flex; align-items: center; justify-content: space-between; height: 78px; }
+.site-header__inner { display: flex; align-items: center; justify-content: space-between; height: 90px; }
 .brand { display: flex; align-items: center; gap: .7rem; text-decoration: none; }
-.brand__mark { width: 40px; height: 40px; flex: none; transition: transform .8s var(--ease-out); }
+.brand__mark { width: 46px; height: 46px; flex: none; transition: transform .8s var(--ease-out); }
 .brand:hover .brand__mark { transform: rotate(-35deg) scale(1.06); }
 .brand__text { display: flex; flex-direction: column; line-height: 1; }
-.brand__small { font-size: .62rem; letter-spacing: .3em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: .2rem; }
-.brand__name { font-family: var(--font-display); font-style: italic; font-size: 1.65rem; letter-spacing: -.02em; }
+.brand__small { font-size: .71rem; letter-spacing: .3em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: .2rem; }
+.brand__name { font-family: var(--font-display); font-style: italic; font-size: 1.9rem; letter-spacing: -.02em; }
 
 .nav { display: flex; align-items: center; gap: .3rem; }
 .nav a {
   position: relative; padding: .5rem .85rem; text-decoration: none;
-  font-size: .9rem; color: var(--ink-2); opacity: .68; transition: color .3s, opacity .3s;
+  font-size: 1.03rem; color: var(--ink-2); opacity: .68; transition: color .3s, opacity .3s;
 }
 .nav a::after {
-  content: ""; position: absolute; left: .7rem; right: .7rem; bottom: .12em; height: max(7px, .18em);
-  background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20120%2014%27%20preserveAspectRatio%3D%27none%27%3E%3Cpath%20d%3D%27M2.5%2010.2C8%205.8%2018%203.2%2032%202.5c20-1%2040%201%2060%201.6%207%20.2%2014%20.1%2021-.4-2.4%203.2-7%205-14%205.6-13%201.2-27%200-40-.7-14-.8-28-1-41%20.6-6%20.7-11%201.8-15.5%203.4z%27%20fill%3D%27%2374a7c4%27%2F%3E%3Cpath%20d%3D%27M26%205.6c18-1.4%2037-1.2%2055%20.2%27%20stroke%3D%27%23f6f0e5%27%20stroke-width%3D%271%27%20fill%3D%27none%27%20opacity%3D%27.42%27%2F%3E%3Cpath%20d%3D%27M12%208.6c10-2%2021-3%2032-3.2%27%20stroke%3D%27%23f6f0e5%27%20stroke-width%3D%27.6%27%20fill%3D%27none%27%20opacity%3D%27.3%27%2F%3E%3C%2Fsvg%3E") no-repeat center/100% 100%;
+  content: ""; position: absolute; left: .55rem; right: .55rem; bottom: .04em; height: max(9px, .26em);
+  background: var(--brush) no-repeat center/100% 100%;
   clip-path: inset(0 100% 0 0); transition: clip-path .55s var(--ease-out);
 }
 .nav a:hover { color: var(--ink); opacity: 1; }
@@ -171,7 +173,7 @@ p { margin: 0 0 1em; }
   .nav-open .nav { clip-path: circle(150% at calc(100% - 38px) 38px); visibility: visible; }
   .nav a { font-family: var(--font-display); font-size: 2rem; padding: .35rem 1rem; opacity: .42; }
   .nav a:hover, .nav a[aria-current="page"] { opacity: 1; }
-  .nav a::after { bottom: .06em; left: 1rem; right: 1rem; }
+  .nav a::after { bottom: 0; left: .8rem; right: .8rem; height: .3em; }
   body.nav-open { overflow: hidden; }
 }
 
@@ -202,9 +204,13 @@ p { margin: 0 0 1em; }
 .hero__grid { display: grid; grid-template-columns: 1fr 1.08fr; gap: clamp(32px, 6vw, 90px); align-items: center; min-height: min(78vh, 760px); }
 .hero h1 { margin-bottom: .45em; }
 .hero h1 .underline { position: relative; display: inline-block; font-style: italic; color: var(--sea); }
-.hero h1 .underline svg { position: absolute; left: -4%; width: 108%; bottom: -.16em; height: .34em; overflow: visible; }
-.hero h1 .underline path { fill: none; stroke: var(--accent-soft); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 420; stroke-dashoffset: 420; animation: draw 1.6s .9s var(--ease-out) forwards; }
-@keyframes draw { to { stroke-dashoffset: 0; } }
+.hero h1 .underline svg { display: none; }
+.hero h1 .underline::after {
+  content: ""; position: absolute; left: -5%; width: 110%; bottom: -.02em; height: .36em;
+  background: var(--brush) no-repeat center/100% 100%;
+  clip-path: inset(0 100% 0 0); animation: paint-on 1.4s .8s var(--ease-out) forwards;
+}
+@keyframes paint-on { to { clip-path: inset(0 0 0 0); } }
 .hero .lede { margin-bottom: 2rem; }
 .hero__meta { display: flex; gap: 2.2rem; margin-top: 2.6rem; padding-top: 1.6rem; border-top: 1px solid rgba(29, 42, 51, .14); }
 .hero__meta div { display: flex; flex-direction: column; }
@@ -382,6 +388,7 @@ p { margin: 0 0 1em; }
   cursor: zoom-in; border: 0; text-align: left;
 }
 .polaroid img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--paper-3); }
+.polaroid--plain { padding-bottom: 14px; }
 .polaroid figcaption, .polaroid .polaroid__cap { position: absolute; left: 14px; right: 14px; bottom: 9px; font-family: var(--font-hand); font-size: 1.35rem; line-height: 1.1; color: #4b4038; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .polaroid::before { /* tape */
   content: ""; position: absolute; top: -12px; left: 50%; width: 88px; height: 26px; margin-left: -44px;
@@ -397,7 +404,7 @@ p { margin: 0 0 1em; }
 
 .checklist { list-style: none; padding: 0; margin: 1.6rem 0 2.2rem; display: grid; gap: .75rem; }
 .checklist li { display: flex; gap: .9rem; align-items: baseline; }
-.checklist li::before { content: ""; flex: none; width: 18px; height: 10px; transform: translateY(-2px); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 10'%3E%3Cpath d='M1 5.5c3-.6 5 .4 7 3.5C10.5 5 13 2.3 17 1' fill='none' stroke='%2374a7c4' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/contain; }
+.checklist li::before { content: ""; flex: none; width: 18px; height: 10px; transform: translateY(-2px); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 10'%3E%3Cpath d='M1 5.5c3-.6 5 .4 7 3.5C10.5 5 13 2.3 17 1' fill='none' stroke='%237d5f33' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/contain; }
 
 /* ---------- Picture rail (hanging pet portraits) ---------- */
 .rail { position: relative; display: flex; justify-content: center; align-items: flex-start; gap: clamp(12px, 2.4vw, 36px); padding-top: 70px; flex-wrap: wrap; }
@@ -455,7 +462,7 @@ body[data-page="gallery"] .page-hero .lede { margin-top: .45rem; }
 /* ==========================================================================
    GALLERY: filters + justified wall
    ========================================================================== */
-.filters { position: sticky; top: 78px; z-index: 20; padding: .6rem 0 .9rem; margin-bottom: 0; background: linear-gradient(var(--paper) 75%, rgba(246,240,229,0)); }
+.filters { position: sticky; top: 90px; z-index: 20; padding: .6rem 0 .9rem; margin-bottom: 0; background: linear-gradient(var(--paper) 75%, rgba(246,240,229,0)); }
 .filters__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
 .segmented { position: relative; display: inline-flex; padding: 4px; background: var(--paper-2); border-radius: 999px; }
 .segmented button { position: relative; z-index: 1; border: 0; background: none; padding: .55rem 1.1rem; border-radius: 999px; cursor: pointer; font-size: .88rem; color: var(--ink-soft); transition: color .35s; }

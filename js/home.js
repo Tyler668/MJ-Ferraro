@@ -224,7 +224,7 @@
   const pasta = window.Site.pastaItems();
   const picks = ["pp-waves", "pp-sunset", "pp-chef", "pp-pomodoro"].map((id) => pasta.findIndex((p) => p.id === id));
   $("#pp-polaroids").innerHTML = picks.map((i) => `
-    <button class="polaroid" type="button" data-i="${i}"><img src="${thumb(pasta[i].img)}" alt="${esc(pasta[i].caption)}" loading="lazy"><span class="polaroid__cap">${esc(pasta[i].title)}</span></button>`).join("");
+    <button class="polaroid polaroid--plain" type="button" data-i="${i}"><img src="${thumb(pasta[i].img)}" alt="${esc(pasta[i].caption)}" loading="lazy"></button>`).join("");
   $$("#pp-polaroids .polaroid").forEach((b) => b.addEventListener("click", () => window.Viewer.open(pasta, +b.dataset.i, $("img", b))));
 
   /* ---------------- Pet rail ---------------- */
