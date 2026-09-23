@@ -10,7 +10,7 @@
   // null = colours matched to the painting
 
   let el, items = [], index = 0, source = null, sourceIndex = -1, lastFocus = null;
-  let mode = "close", geo = null, roomGeo = null, raf = 0, open = false, pal = null;
+  let mode = "close", geo = null, roomGeo = null, raf = 0, open = false, pal = null, layoutRetry = 0;
   const m = { rx: 0, ry: 0, trx: 0, try: 0, hover: false, kick: 0, kickT: 0 };
 
   function build() {
@@ -130,6 +130,11 @@
     const it = items[index];
     const stage = $(".viewer__stage", el);
     const sw = stage.clientWidth, sh = stage.clientHeight;
+    // The stage is display:none until .is-open, so a zero here means the browser has
+    // not settled yet. Sizing from it would give a 0x0 painting, so try again next
+    // frame instead; `open` stops this retrying against a closed viewer.
+    if ((!sw || !sh) && open) { cancelAnimationFrame(layoutRetry); layoutRetry = requestAnimationFrame(() => layout(keepImage)); return; }
+    if (!sw || !sh) return;
     const kind = kindOf(it), isPrint = kind === "print";
     const r = ratio(it.currentImg || it.img);
 
