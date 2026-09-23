@@ -6,15 +6,13 @@
    ========================================================================== */
 
 window.SITE = {
-  // Placeholder details: swap for the real ones before launch.
   artist: "M. J. Ferraro",
   brand: "M. J. Ferraro",
   tagline: "A local brush, a custom canvas & no two scenes alike",
   region: "New England & the Gulf Coast",
-  email: "hello@mjferraro.com",
-  phone: "(401) 555-0142",
-  instagram: "mjferraro",
-  facebook: "mjferraro",
+  email: "Mjf1162@gmail.com",
+  phone: "(401) 480-0394",
+  instagram: "margaretferraro",
 };
 
 window.CATEGORIES = [
@@ -50,7 +48,7 @@ window.WORKS = [
     blurb: "Sea oats on a white dune as the sky fades from pink to lavender." },
   { id: "blue-heron-family", title: "Blue Heron Family", img: "blue-heron-family-16x16-acrylic-on-gallery-wrapped-canvas", size: [16, 16], medium: "Acrylic on gallery-wrapped canvas", category: "flora", status: "available", price: 300, featured: true,
     blurb: "Two great blue herons and a fledgling in a green thicket." },
-  { id: "boatyard", title: "Boatyard", img: "boatyard-12x12-acrylic-on-canvas", size: [12, 12], medium: "Acrylic on canvas", category: "harbors", status: "available", price: 350,
+  { id: "boatyard", title: "Boatyard", img: "boatyard-12x12-acrylic-on-canvas", size: [12, 12], medium: "Acrylic on canvas", category: "harbors", status: "available", price: 250,
     blurb: "Shrimp boats tied up at their pilings, reflected in a still creek." },
   { id: "gilbert-stuart-birthplace", title: "Gilbert Stuart Birthplace", img: "gilbert-stuart-birthplace-12x12-acrylic-on-gallery-wrapped-canvas", size: [12, 12], medium: "Acrylic on gallery-wrapped canvas", category: "harbors", place: "Saunderstown, Rhode Island", status: "available", price: 250,
     blurb: "The historic red homestead and mill wheel under fresh snow." },

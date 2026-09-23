@@ -113,7 +113,6 @@
             <li><a href="mailto:${S.email}">${S.email}</a></li>
             <li><a href="tel:${S.phone.replace(/[^\d+]/g, "")}">${S.phone}</a></li>
             <li><a href="https://instagram.com/${S.instagram}" target="_blank" rel="noopener">Instagram</a></li>
-            <li><a href="https://facebook.com/${S.facebook}" target="_blank" rel="noopener">Facebook</a></li>
             <li>${S.region}</li></ul></div>
         </div>
         <div class="footer-bottom"><span>© ${new Date().getFullYear()} ${Site.esc(S.brand)}. All artwork © the artist.</span></div>
