@@ -95,6 +95,10 @@
   const cards = $$(".flow__item", stage);
 
   function sizeCards() {
+    // A first pass can land before the section has a height (stylesheet or fonts still
+    // settling, a restored or background tab). Sizing from zero gives every canvas
+    // 0x0 and the carousel looks empty, so bail and let the observer below re-run it.
+    if (!flow.clientHeight || !innerWidth) return;
     boxH = Math.min(flow.clientHeight * 0.62, 360, innerWidth * 0.5);
     flow.style.setProperty("--bh", boxH + "px");
     flow.style.setProperty("--bw", boxH * 1.6 + "px");
@@ -202,6 +206,15 @@
   }, 4200);
 
   addEventListener("resize", sizeCards);
+  addEventListener("load", sizeCards);
+  document.fonts && document.fonts.ready.then(sizeCards);
+  if (window.ResizeObserver) {
+    let lastH = 0;
+    new ResizeObserver(() => {                       // re-run once the section has a real height
+      const h = flow.clientHeight;
+      if (h && h !== lastH) { lastH = h; sizeCards(); }
+    }).observe(flow);
+  }
   sizeCards();
 
   /* ---------------- Rooms ---------------- */
