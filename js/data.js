@@ -16,7 +16,7 @@ window.SITE = {
   facebook: "https://www.facebook.com/share/1BGt1o2Qxc/",
   // Paste the Formspree form ID here (the part after /f/ in their endpoint).
   // Empty = the contact form falls back to opening the visitor's email app.
-  formspree: "",
+  formspree: "xppwrynn",
 };
 
 window.CATEGORIES = [
