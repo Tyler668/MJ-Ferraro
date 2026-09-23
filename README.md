@@ -1,4 +1,4 @@
-# Paintings by Peg
+# M. J. Ferraro
 
 Static site with no build step: plain HTML, CSS and JS. To preview locally:
 
@@ -29,7 +29,7 @@ To mark a painting sold, change `status: "available"` to `status: "sold"`. It mo
 Other placeholders are marked with `<!-- PLACEHOLDER -->` comments: portrait pricing, Pasta & Paint details and the FAQ.
 
 `about.html` is parked: it still works if you open it, but nothing links to it. Bring it back by
-re-adding `["about.html", "About", "about"]` to the links list in `js/site.js` once Peg has a photo and a bio.
+re-adding `["about.html", "About", "about"]` to the links list in `js/site.js` once M. J. Ferraro has a photo and a bio.
 
 ## Adding photos
 Drop new files (HEIC or JPG) into `_source/Peg_s Paintings/` and run `python tools/convert.py`

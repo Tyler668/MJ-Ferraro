@@ -3,15 +3,14 @@
    derived from the painting, and a details panel.
    Usage: Viewer.open(items, index, sourceElement)                            */
 (function () {
-  const { $, $$, ICON, esc, thumb, full, ratio, color, category, sizeText, statusText, reduceMotion, hsl } = window.Site;
+  const { $, $$, ICON, esc, thumb, full, ratio, color, sizeText, statusText, reduceMotion, hsl } = window.Site;
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const lerp = (a, b, t) => a + (b - a) * t;
 
   // null = colours matched to the painting
-  const WALLS = [["Matched to painting", null], ["Linen", "#ebe4d6"], ["Sea glass", "#d3e0d8"], ["Harbor", "#3b4f5c"], ["Blush", "#eedbd1"]];
 
   let el, items = [], index = 0, source = null, sourceIndex = -1, lastFocus = null;
-  let mode = "close", geo = null, roomGeo = null, raf = 0, open = false, pal = null, wallOverride = null;
+  let mode = "close", geo = null, roomGeo = null, raf = 0, open = false, pal = null;
   const m = { rx: 0, ry: 0, trx: 0, try: 0, hover: false, kick: 0, kickT: 0 };
 
   function build() {
@@ -50,7 +49,6 @@
           </div>
           <div class="roomview" aria-hidden="true">
             <div class="roomview__scene"></div>
-            <div class="swatches" role="group" aria-label="Wall colour">${WALLS.map(([n], i) => `<button type="button" aria-label="${n}" title="${n}" aria-pressed="${i === 0}" data-i="${i}"></button>`).join("")}</div>
             <div class="roomview__note"></div>
           </div>
           <div class="loupe" aria-hidden="true"></div>
@@ -76,11 +74,6 @@
       if (overPainting(e)) setMode("close");
     });
     $$(".viewer__modes button", el).forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
-    $$(".swatches button", el).forEach((b) => b.addEventListener("click", () => {
-      wallOverride = WALLS[+b.dataset.i][1];
-      $$(".swatches button", el).forEach((x) => x.setAttribute("aria-pressed", x === b));
-      renderRoom();
-    }));
 
     const stage = $(".viewer__stage", el);
     stage.addEventListener("pointerenter", () => (m.hover = true));
@@ -146,7 +139,9 @@
     const top0 = sw < 600 ? 52 : 54, bottom0 = 78;
     const wire = isPrint ? 0 : Math.round(clamp(sh * 0.055, 28, 50));
     const availH = sh - top0 - bottom0 - wire;
-    const maxW = sw * (sw < 600 ? 0.86 : 0.8) * f, maxH = availH * 0.98 * f;
+    // FIT leaves a little more wall around the painting, so it reads as hung rather than filling the frame
+    const FIT = 0.9165;                                // 16% less area than the space it could take
+    const maxW = sw * (sw < 600 ? 0.86 : 0.8) * f * FIT, maxH = availH * 0.98 * f * FIT;
     const mat = kind === "paper" ? Math.round(clamp(Math.min(maxW, maxH) * 0.075, 14, 30)) : 0;
     const frame = kind === "framed" ? Math.round(clamp(Math.min(maxW, maxH) * 0.035, 8, 18)) : 0;
     const pad = (mat + frame) * 2;
@@ -196,7 +191,7 @@
   }
 
   /* ---------- magnifier: a round loupe onto the full-resolution image ---------- */
-  const ZOOM = 2.6;
+  const ZOOM = 2.34;
   function loupe(e) {
     const lens = $(".loupe", el);
     if (!e || stepping) {
@@ -237,8 +232,7 @@
     const ppi = Math.min((sw * 0.96) / Math.max(140, W + 30), (sh * floorFrac - topRoom) / (34 + 8 + H));
     const VW = sw / ppi, VH = sh / ppi, cx = VW / 2, fy = VH * floorFrac;
 
-    const wall = wallOverride || hsl(h, sat(0.2), 0.89);
-    const darkWall = wallOverride === "#3b4f5c";
+    const wall = hsl(h, sat(0.2), 0.89);
     const sofa = (l, s = 0.16) => hsl(h + 180, sat(s), l);
     const accent = pal.accent, accentDeep = hsl(h, sat(0.5), 0.42);
     // a second colour drawn from the painting, for the striped pillow and the lamp
@@ -274,7 +268,7 @@
 
       <!-- wall, window light, trim -->
       <rect width="${n(VW)}" height="${n(fy)}" fill="${wall}"/>
-      <polygon points="${n(VW * 0.02)},0 ${n(VW * 0.34)},0 ${n(VW * 0.52)},${n(fy)} ${n(VW * 0.14)},${n(fy)}" fill="url(#rv-light)" opacity="${darkWall ? 0.35 : 0.9}" filter="url(#rv-haze)"/>
+      <polygon points="${n(VW * 0.02)},0 ${n(VW * 0.34)},0 ${n(VW * 0.52)},${n(fy)} ${n(VW * 0.14)},${n(fy)}" fill="url(#rv-light)" opacity="0.9" filter="url(#rv-haze)"/>
       <rect width="${n(VW)}" height="${n(fy)}" fill="url(#rv-shade)" opacity=".5"/>
       <rect y="${n(fy - 5)}" width="${n(VW)}" height="5" fill="#f5f0e6"/>
       <rect y="${n(fy - 5)}" width="${n(VW)}" height=".35" fill="#000" opacity=".08"/>
@@ -356,8 +350,6 @@
 
     const note = $(".roomview__note", el);
     note.textContent = `Shown to scale · ${sizeText(it)} above an 84″ sofa`;
-    note.classList.toggle("is-dark", darkWall);
-    $$(".swatches button", el).forEach((b, i) => { b.style.background = WALLS[i][1] || hsl(h, sat(0.2), 0.89); });
   }
 
   function overPainting(e) {
@@ -431,22 +423,21 @@
   function renderInfo() {
     const it = items[index];
     const info = $(".viewer__info", el);
-    const cat = it.category ? category(it.category) : null;
     const size = sizeText(it);
     const specs = [
       size && ["Size", size],
       it.medium && ["Medium", esc(it.medium)],
+      it.status === "available" && it.price && ["Price", `$${it.price.toLocaleString("en-US")}`],
       it.status && ["Status", `<span class="status status--${it.status}">${statusText(it)}</span>`],
-      cat && ["Subject", `<a href="gallery.html#subject=${cat.id}">${cat.name}</a>`],
     ].filter(Boolean);
 
     let cta = it.cta;
-    if (!cta && it.status === "available") cta = { href: `contact.html?piece=${it.id}`, label: "Inquire about this piece", note: "Price on request." };
-    if (!cta && it.status === "sold") cta = { href: `contact.html?topic=commission&like=${it.id}`, label: "Ask about something similar", note: "This painting has sold. Peg takes commissions for similar work." };
+    if (!cta && it.status === "available") cta = { href: `contact.html?piece=${it.id}`, label: "Inquire about this piece", note: it.price ? null : "Price on request." };
+    if (!cta && it.status === "sold") cta = { href: `contact.html?topic=commission&like=${it.id}`, label: "Ask about something similar", note: "This painting has sold. Commissions for similar work are available on request." };
 
     const alts = it.alts && it.alts.length ? [it.img, ...it.alts] : null;
     info.innerHTML = `
-      <span class="eyebrow">${esc(it.kind || (cat ? cat.name : "Original painting"))}</span>
+      <span class="eyebrow">${esc(it.kind || "Original painting")}</span>
       <h2 id="viewer-title">${esc(it.title)}</h2>
       ${it.subtitle ? `<div class="viewer__subtitle">${esc(it.subtitle)}</div>` : ""}
       ${it.place ? `<div class="viewer__place">${ICON.pin}${esc(it.place)}</div>` : ""}
@@ -576,10 +567,17 @@
     if (!open || stepping || items.length < 2) return;
     stepping = true;
     const wrap = $(".rig-wrap", el), shadows = $(".shadow-wrap", el), info = $(".viewer__info", el), scene = $(".roomview__scene", el);
+    // The nail travels with the painting, so the taut wire never flies in without its
+    // pin. In the room view there is no pin on show, and an animation's keyframes beat
+    // the stylesheet that hides it, so leave the nail alone there.
+    const nail = mode === "room" ? null : $(".nail", el);
     const outT = reduceMotion ? 1 : 320;
     loupe(null);
     // lift the painting off the nail...
-    wrap.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${-dir * 40}px, -26px)`, opacity: 0 }], { duration: outT, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" });
+    const outKf = [{ transform: "none", opacity: 1 }, { transform: `translate(${-dir * 40}px, -26px)`, opacity: 0 }];
+    const outOpt = { duration: outT, easing: "cubic-bezier(.5,0,.75,0)", fill: "forwards" };
+    wrap.animate(outKf, outOpt);
+    if (nail) nail.animate(outKf, outOpt);
     scene.animate([{ opacity: 1 }, { opacity: 0 }], { duration: outT, fill: "forwards" });
     shadows.animate([{ opacity: 1 }, { opacity: 0 }], { duration: outT, fill: "forwards" });
     info.classList.add("is-swapping");
@@ -587,11 +585,15 @@
       index = (index + dir + items.length) % items.length;
       renderInfo(); layout(); renderRoom(); setMode(mode, false);
       wrap.getAnimations().forEach((a) => a.cancel());
+      if (nail) nail.getAnimations().forEach((a) => a.cancel());
       scene.getAnimations().forEach((a) => a.cancel());
       shadows.getAnimations().forEach((a) => a.cancel());
       shadows.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, easing: "ease-in" });
       // ...and hang the next one, which swings a little as it settles
-      wrap.animate([{ transform: `translate(${dir * 40}px, -30px)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: reduceMotion ? 1 : 560, easing: "cubic-bezier(.16,1,.3,1)" });
+      const inKf = [{ transform: `translate(${dir * 40}px, -30px)`, opacity: 0 }, { transform: "none", opacity: 1 }];
+      const inOpt = { duration: reduceMotion ? 1 : 560, easing: "cubic-bezier(.16,1,.3,1)" };
+      wrap.animate(inKf, inOpt);
+      if (nail) nail.animate(inKf, inOpt);
       scene.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 500 });
       kick(dir * 2.6);
       requestAnimationFrame(() => info.classList.remove("is-swapping"));

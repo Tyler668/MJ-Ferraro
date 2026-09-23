@@ -72,7 +72,7 @@
       <circle cx="33" cy="16" r="3.6" fill="#b58a45"/><circle cx="13" cy="30" r="3.6" fill="#8db3a7"/>
     </svg>`;
   const brand = `<a class="brand" href="index.html" aria-label="${Site.esc(S.brand)} home">${mark}
-      <span class="brand__text"><span class="brand__small">Paintings by</span><span class="brand__name">${Site.esc(S.artist)}</span></span></a>`;
+      <span class="brand__text"><span class="brand__name">${Site.esc(S.artist)}</span></span></a>`;
 
   const header = $("#site-header");
   if (header) {
@@ -103,7 +103,7 @@
           <span class="eyebrow">Contact</span>
           <h2>Get in touch</h2>
           <p>Ask about a painting, a pet portrait, a custom piece or a Pasta &amp; Paint party.</p>
-          <div class="btn-row"><a class="btn btn--light" href="contact.html">Contact Peg ${ICON.arrow}</a><a class="btn btn--ghost-light" href="gallery.html#status=available">See available work</a></div>
+          <div class="btn-row"><a class="btn btn--light" href="contact.html">Get in touch ${ICON.arrow}</a><a class="btn btn--ghost-light" href="gallery.html#status=available">See available work</a></div>
         </div>` : ""}
         <div class="footer-grid">
           <div>${brand}<p style="margin-top:1.2rem;max-width:32ch;font-size:.92rem">Original paintings of the coast, gardens and home.</p></div>
@@ -116,7 +116,7 @@
             <li><a href="https://facebook.com/${S.facebook}" target="_blank" rel="noopener">Facebook</a></li>
             <li>${S.region}</li></ul></div>
         </div>
-        <div class="footer-bottom"><span>© ${new Date().getFullYear()} ${Site.esc(S.brand)}. All artwork © the artist.</span><span>Studio visits by appointment</span></div>
+        <div class="footer-bottom"><span>© ${new Date().getFullYear()} ${Site.esc(S.brand)}. All artwork © the artist.</span></div>
       </div>`;
   }
 
@@ -142,6 +142,54 @@
   Site.observe = (root = document) => $$(".reveal:not(.is-in)", root).forEach((el) => io ? io.observe(el) : el.classList.add("is-in"));
   document.addEventListener("DOMContentLoaded", () => Site.observe());
   if (document.readyState !== "loading") Site.observe();
+
+  /* ---------- Ampersands in the thematic beige ----------
+     Wraps the "&" in h1 and h2 text, including headings rendered later, so the
+     mark picks up .amp without every template having to remember the span. */
+  const AMP_SKIP = /^(SCRIPT|STYLE|TEXTAREA|OPTION|SELECT|SVG)$/;
+  const AMP_IN = "h1, h2";                          // big titles only
+  function ampify(root) {
+    if (!root || root.nodeType !== 1) return;
+    $$(AMP_IN, root).forEach(ampifyOne);
+    if (root.matches && root.matches(AMP_IN)) ampifyOne(root);
+  }
+  function ampifyOne(root) {
+    const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(t) {
+        if (!t.nodeValue.includes("&")) return NodeFilter.FILTER_REJECT;
+        const p = t.parentElement;
+        if (!p || AMP_SKIP.test(p.nodeName) || p.closest(".amp")) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    });
+    const hits = [];
+    for (let t = walk.nextNode(); t; t = walk.nextNode()) hits.push(t);
+    hits.forEach((t) => {
+      const frag = document.createDocumentFragment();
+      t.nodeValue.split("&").forEach((part, i) => {
+        if (i) { const sp = document.createElement("span"); sp.className = "amp"; sp.textContent = "&"; frag.appendChild(sp); }
+        if (part) frag.appendChild(document.createTextNode(part));
+      });
+      t.parentNode.replaceChild(frag, t);
+    });
+  }
+  let ampQueued = false;
+  const ampObserver = new MutationObserver(() => {
+    if (ampQueued) return;
+    ampQueued = true;
+    requestAnimationFrame(() => {
+      ampQueued = false;
+      ampObserver.disconnect();                    // our own spans must not re-trigger this
+      ampify(document.body);
+      ampObserver.observe(document.body, { childList: true, subtree: true });
+    });
+  });
+  const ampStart = () => {
+    ampify(document.body);
+    ampObserver.observe(document.body, { childList: true, subtree: true });
+  };
+  document.addEventListener("DOMContentLoaded", ampStart);
+  if (document.readyState !== "loading") ampStart();
 
   /* ---------- Colour language, derived live from each painting ----------
      Samples the thumbnail, builds a saturation-weighted hue histogram and picks
@@ -193,8 +241,10 @@
       labs.forEach(([L, a0, b0], j) => {
         const a = a0 - ca, bb = b0 - cb, C = Math.hypot(a, bb);
         total++;
-        // colourful enough to count (drops greys and sand), not near-black
-        if (C < 0.045 || L < 0.25) return;
+        // colourful enough to count (drops greys and sand), not near-black, and not a
+        // near-white highlight: sunlit foam, bright sky and glare read as pale warm pixels
+        // and, being numerous, used to outvote the water or foliage that carries the painting
+        if (C < 0.045 || L < 0.25 || L > 0.85) return;
         count++;
         const hue = (Math.atan2(bb, a) * 180 / Math.PI + 360) % 360;
         const k = Math.floor(hue / (360 / B)) % B, i = j * 4;
@@ -208,7 +258,9 @@
       // the most saturated quarter of it: a specific colour from the painting, not a blend.
       const pick = (centre) => {
         const pool = [];
-        for (let o = -2; o <= 2; o++) pool.push(...members[(centre + o + B) % B]);
+        // ±1 bin: wide enough to have pixels to choose from, tight enough that the average
+        // stays the winning cluster's colour instead of blending into its warm neighbours
+        for (let o = -1; o <= 1; o++) pool.push(...members[(centre + o + B) % B]);
         if (!pool.length) return null;
         pool.sort((p, q) => q[0] - p[0]);
         const take = pool.slice(0, Math.max(8, Math.round(pool.length * 0.25)));

@@ -1,0 +1,192 @@
+PORTAL PLAN — letting the artist update this site without a developer
+=====================================================================
+Status: PLAN ONLY. Nothing here is built yet. Written 2026-09-18.
+Read this before starting work on the update portal, and read the
+"Decisions already made" section before proposing a different design.
+
+
+THE GOAL
+--------
+M. J. Ferraro should be able to do two things, forever, without anyone's help:
+
+  1. Add a new painting (photo + a few fields).
+  2. Change a painting's status (available -> sold).
+
+Everything else (rewriting a blurb, reordering the featured row, adding a
+category) stays a developer job, done occasionally. That split is deliberate:
+those two operations are ~90% of the volume and the simplest to make safe.
+
+The constraint that shaped this plan: the site must not need ongoing
+developer attention for years. Optimise for "nothing to maintain", not for
+"most features".
+
+
+DECISIONS ALREADY MADE (don't relitigate without a reason)
+----------------------------------------------------------
+1. NO CI / NO BUILD STEP. Do not add a GitHub Action that converts images or
+   regenerates data files on push. That pipeline is the part most likely to
+   rot: pinned action versions get deprecated, Python runtimes move on,
+   pillow-heif breaks against new libheif. Every year or two it would need a
+   developer. Avoid it.
+
+2. IMAGE PROCESSING HAPPENS IN THE PORTAL, IN THE BROWSER. The portal resizes
+   with <canvas> and encodes JPEG client-side, then commits FINISHED artifacts.
+   The repo should only ever contain final files. Consequence: if the portal
+   stops working, the live site is unaffected, and js/data.js is a plain file
+   any human can still edit by hand.
+
+3. GITHUB PAGES SERVES THE REPO AS-IS. No transform between repo and site.
+
+4. HEIC IS NOT SUPPORTED, BY CHOICE. Instead, set her iPhone camera to
+   Settings > Camera > Formats > "Most Compatible" so it shoots JPEG. This
+   removes the single worst dependency (a wasm HEIC decoder) for free.
+   The portal should still reject non-JPEG/PNG uploads with a clear message
+   telling her about that setting.
+
+
+ARCHITECTURE
+------------
+  portal (single static HTML page, unlisted URL or a local file)
+      | reads  js/data.js + js/image-meta.js  (via raw.githubusercontent or the API)
+      | writes images/full/<slug>.jpg, images/thumb/<slug>.jpg,
+      |        js/data.js, js/image-meta.js
+      v
+  GitHub repo  --(GitHub Pages, no build)-->  live site
+
+Writes go through the GitHub contents API:
+  PUT /repos/{owner}/{repo}/contents/{path}    (base64 body + the blob's sha)
+Batch a single logical change into as few commits as possible; the API is one
+file per call, so an "add a painting" is ~4 calls. Handle 409 conflicts by
+re-reading the file and retrying, not by force-writing.
+
+
+AUTH
+----
+A fine-grained personal access token:
+  - scoped to this ONE repository
+  - permission: Contents = Read and write (nothing else)
+  - expiration: no expiration  <- this is the point; no annual rotation ritual
+
+Stored in the portal's localStorage. She pastes it once.
+
+Honest risk accounting:
+  - Clearing site data or a new laptop means re-pasting it. Write her a
+    one-page note with the token and the URL. That's a 5-minute recovery,
+    not a rebuild.
+  - Leak blast radius is "someone can commit to an art website". Recoverable,
+    not financial. Do NOT give the token any other scope, which is what keeps
+    that true.
+  - Do not put the token in the page source or the repo. localStorage only.
+
+
+WHAT THE PORTAL DOES
+--------------------
+Screen 1 — the list.
+  Renders every entry in window.WORKS with a thumbnail and an
+  available/sold/nfs control. Changing one rewrites that entry's status field
+  in js/data.js and commits. This is the operation she'll use most; make it
+  one click and make it obviously saved.
+
+Screen 2 — add a piece.
+  Fields, matching the existing schema in js/data.js:
+     id        derived from title, but SEE "stable ids" below
+     title     text, required
+     img       the slug; derived, must match the committed filenames
+     size      [w, h] inches, or null if unknown
+     medium    text (e.g. "Acrylic on gallery-wrapped canvas")
+     category  select, from window.CATEGORIES in js/data.js
+     status    available | sold | nfs
+     place     optional text (e.g. "Dauphin Island, Alabama")
+     blurb     optional; leave empty rather than inventing one
+     featured  optional bool; controls the home page row
+  Photo handling, mirroring tools/convert.py so output matches what exists:
+     - EXIF transpose first (orientation), then convert to RGB
+     - images/full  : longest edge 2000, JPEG quality 86, progressive
+     - images/thumb : longest edge 720,  JPEG quality 80, progressive
+     - append to js/image-meta.js: slug: [thumbW, thumbH, averageColour]
+       where averageColour is the image resized to 1x1 (see tools/palette.py)
+  A crop/straighten step is needed — see "known gaps".
+
+
+DATA CONTRACT (read before writing any code)
+--------------------------------------------
+js/data.js is the single source of truth for content. It is hand-readable and
+must STAY hand-readable — a developer has to be able to fix it in an editor
+years from now. The portal must therefore write it back as formatted JS, not
+as a minified blob. Preserve the existing shape:
+
+  window.SITE       name, email, phone, socials, region   (portal must not touch)
+  window.CATEGORIES the four groupings + cover slugs       (portal must not touch)
+  window.WORKS      one object per painting                (portal owns status,
+                                                            appends new entries)
+  window.PETS / KEEPSAKES / PASTA                          (portal must not touch)
+
+js/image-meta.js is GENERATED (today by tools/palette.py, invoked from
+tools/convert.py). The portal appends to it. Keep the format identical so the
+Python tools still work for bulk operations.
+
+IMPORTANT: colour is NOT stored per painting. The room view, glow and wall
+colours are derived live in the browser from the thumbnail pixels
+(derivePalette in js/site.js). Nothing about colour needs entering, and the
+portal must not try to. If a painting's colours look wrong, that is an
+algorithm question, not a data question.
+
+After changing CSS or JS, tools/bump.py re-stamps the ?v= query on asset
+links. The portal does not touch CSS or JS, so it does not need to bump —
+but if that ever changes, it must.
+
+
+KNOWN GAPS — solve these before or during, not after
+-----------------------------------------------------
+1. STABLE IDS. Today a painting's identity IS its slug, and the viewer links
+   to pieces by it (contact.html?piece=<id>, gallery.html#subject=..., the
+   "ask about something similar" link in js/viewer.js). If a title is edited
+   later, the id must NOT change, or shared links break. Decide the rule
+   before she has shared any links: either ids are immutable once assigned,
+   or the portal refuses to rename. Do not leave this implicit.
+
+2. CROPPING. tools/convert.py carries a hand-written CROPS entry for a photo
+   with wall visible at the bottom. Auto-detecting a canvas edge is
+   unreliable, and a bad crop looks worse than a bad colour. Either give the
+   portal a simple drag-a-rectangle crop step, or teach her to crop on her
+   phone first (easy on iOS). Do not ship with no cropping at all.
+
+3. CATEGORY COVERS. window.CATEGORIES has hardcoded cover slugs. If she adds
+   paintings for years and never touches these, the gallery's category cards
+   grow stale. Either the portal exposes them, or change the site to derive
+   covers (e.g. first three available in that category). Prefer deriving.
+
+4. DELETING / UNPUBLISHING. Not in scope above, but she will eventually want
+   it. Decide whether "remove" means deleting the entry or setting a hidden
+   flag. Deleting orphans the image files; a flag is safer and reversible.
+
+5. DUPLICATE SLUGS. tools/convert.py already dedupes with a -2 suffix and has
+   a SKIP set for one known duplicate. The portal needs the same collision
+   handling or it will silently overwrite an existing painting's images.
+
+
+WHAT "DONE" LOOKS LIKE
+----------------------
+She can, from her own laptop, with no one's help:
+  - photograph a finished painting, crop it, add it, and see it live
+  - mark a piece sold from her phone at a show
+  - do both again in three years without anything having expired
+
+And if the portal is gone: js/data.js still reads like a normal file, the
+Python tools in tools/ still work, and a developer can pick it up cold.
+
+
+THE ALTERNATIVE THAT WAS CONSIDERED AND SET ASIDE
+--------------------------------------------------
+A git-based web CMS (Decap/Sveltia on Netlify). Nicer forms, editable
+descriptions, no filename rules. Set aside because it adds an auth service
+and an admin UI that both need tending, which is exactly the ongoing burden
+this plan exists to avoid. Revisit only if she wants to write and edit prose
+herself — and if so, layer it on top of this data contract rather than
+replacing it.
+
+A filename-as-metadata approach (a Drive folder where the filename is the
+title/size/medium and a "Sold" subfolder means sold) was also considered.
+It is genuinely elegant and needs no portal, but it makes filenames
+load-bearing and gives her no feedback when one is malformed. It remains a
+reasonable fallback if the portal proves too much to build.

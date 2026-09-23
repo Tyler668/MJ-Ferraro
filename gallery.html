@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gallery · Paintings by Peg</title>
-  <meta name="description" content="Browse original paintings by Peg: sea and shore, harbors and hometowns, flora and fauna, tables and tales.">
+  <title>Gallery · M. J. Ferraro</title>
+  <meta name="description" content="Browse original paintings by M. J. Ferraro: sea and shore, harbors and hometowns, flora and fauna, tables and tales.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4c11 0 20 8 20 18 0 7-5 10-10 10h-4c-2.5 0-4 1.8-4 4 0 1 .6 2 .6 3.2C26.6 42 25.4 44 23 44 12 44 4 35 4 24S13 4 24 4z' fill='%23e8dcc6'/%3E%3Ccircle cx='15' cy='20' r='3.6' fill='%237d5f33'/%3E%3Ccircle cx='23' cy='13' r='3.6' fill='%232c5b6b'/%3E%3Ccircle cx='33' cy='16' r='3.6' fill='%23b58a45'/%3E%3Ccircle cx='13' cy='30' r='3.6' fill='%238db3a7'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260917160335">
+  <link rel="stylesheet" href="css/style.css?v=20260923101907">
 </head>
 <body data-page="gallery">
   <header id="site-header"></header>
@@ -46,10 +46,10 @@
 
   <footer id="site-footer"></footer>
 
-  <script src="js/data.js?v=20260917160335"></script>
-  <script src="js/image-meta.js?v=20260917160335"></script>
-  <script src="js/site.js?v=20260917160335"></script>
-  <script src="js/viewer.js?v=20260917160335"></script>
+  <script src="js/data.js?v=20260923101907"></script>
+  <script src="js/image-meta.js?v=20260923101907"></script>
+  <script src="js/site.js?v=20260923101907"></script>
+  <script src="js/viewer.js?v=20260923101907"></script>
   <script>
   (function () {
     const { $, $$, esc, thumb, ratio, color, sizeText, statusText, lazyFade } = window.Site;
@@ -82,8 +82,14 @@
 
     const visibleWorks = () => WORKS.filter((w) => (state.status === "all" || w.status === state.status) && (state.subject === "all" || w.category === state.subject));
 
+    let lastW = 0;
     function layout() {
       const W = wall.clientWidth;
+      // A first pass can land before the wall has a width (fonts, slow stylesheet, a
+      // hidden tab). Writing NaN sizes then leaves every tile unsized and the wall
+      // collapses to a column; bail out and let the ResizeObserver below run it again.
+      if (!W) return;
+      lastW = W;
       const gap = W < 600 ? 10 : 18;
       const targetH = W < 600 ? 150 : W < 1000 ? 210 : 270;
       const vis = new Set(visibleWorks());
@@ -103,7 +109,7 @@
         if (!vis.has(w)) { t.classList.add("is-hidden"); t.tabIndex = -1; return; }
         t.classList.remove("is-hidden"); t.tabIndex = 0;
         const r = ratio(w.img);
-        row.push({ t, r }); sum += r;
+        row.push({ t, r: isFinite(r) && r > 0 ? r : 1 }); sum += isFinite(r) && r > 0 ? r : 1;
         const rowW = sum * targetH + gap * (row.length - 1);
         if (rowW >= W) {
           place(row, (W - gap * (row.length - 1)) / sum);
@@ -119,6 +125,9 @@
     const seg = $("#status-filter"), pill = $(".segmented__pill", seg);
     const movePill = () => {
       const b = $(`[data-status="${state.status}"]`, seg);
+      // same first-paint race as the wall: a zero measurement would leave the pill
+      // invisible, so skip it and let the observer below run once there is a width
+      if (!b.offsetWidth) return;
       pill.style.width = b.offsetWidth + "px";
       pill.style.transform = `translateX(${b.offsetLeft}px)`;
     };
@@ -145,6 +154,16 @@
 
     addEventListener("hashchange", () => { readHash(); update(); });
     let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(update, 80); });
+    // re-run once the wall actually has a width, and on any later width change
+    if (window.ResizeObserver) {
+      new ResizeObserver(() => {
+        const W = wall.clientWidth;
+        if (W && W !== lastW) layout();               // width only: our own height write must not loop
+      }).observe(wall);
+      new ResizeObserver(movePill).observe(seg);      // the pill tracks the buttons' real width
+    }
+    addEventListener("load", () => { layout(); movePill(); });
+    document.fonts && document.fonts.ready.then(() => { layout(); movePill(); });
     readHash();
     // first layout without the slide-in transition
     tiles.forEach((t) => (t.style.transition = "none"));
