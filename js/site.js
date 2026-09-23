@@ -64,6 +64,7 @@
     ["gallery.html", "Gallery", "gallery"],
     ["commissions.html", "Commissions", "commissions"],
     ["pasta-and-paint.html", "Pasta & Paint", "pasta"],
+    ["about.html", "About", "about"],
     ["contact.html", "Contact", "contact"],
   ];
   const mark = `<svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">

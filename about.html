@@ -1,23 +1,21 @@
-<!-- PARKED: not linked from the site nav, kept for when M. J. Ferraro has a photo and a bio.
-     To bring it back, re-add ["about.html", "About", "about"] to the links list in js/site.js. -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>About · M. J. Ferraro</title>
-  <meta name="description" content="About M. J. Ferraro, a painter of the coast, gardens and home.">
+  <meta name="description" content="M. J. Ferraro, a painter of the coast, gardens and home, exhibited in Rhode Island, Massachusetts and Alabama.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4c11 0 20 8 20 18 0 7-5 10-10 10h-4c-2.5 0-4 1.8-4 4 0 1 .6 2 .6 3.2C26.6 42 25.4 44 23 44 12 44 4 35 4 24S13 4 24 4z' fill='%23e8dcc6'/%3E%3Ccircle cx='15' cy='20' r='3.6' fill='%237d5f33'/%3E%3Ccircle cx='23' cy='13' r='3.6' fill='%232c5b6b'/%3E%3Ccircle cx='33' cy='16' r='3.6' fill='%23b58a45'/%3E%3Ccircle cx='13' cy='30' r='3.6' fill='%238db3a7'/%3E%3C/svg%3E">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://mjferraro.com/about.html">
   <meta property="og:title" content="About · M. J. Ferraro">
-  <meta property="og:description" content="About M. J. Ferraro, a painter of the coast, gardens and home.">
+  <meta property="og:description" content="M. J. Ferraro, a painter of the coast, gardens and home, exhibited in Rhode Island, Massachusetts and Alabama.">
   <meta property="og:image" content="https://mjferraro.com/images/full/birdhouses-of-dauphin-island-36x48-acrylic-on-gallery-wrapped-canvas.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260923125344">
+  <link rel="stylesheet" href="css/style.css?v=20260923125828">
 </head>
 <body data-page="about">
   <header id="site-header"></header>
@@ -26,13 +24,15 @@
     <section class="page-hero">
       <div class="wrap split">
         <div>
-          <span class="eyebrow reveal">About</span>
-          <h1 class="reveal" style="--d:.08s">About M. J. Ferraro</h1>
-          <!-- PLACEHOLDER BIO: written from the work itself. Replace with M. J. Ferraro's own story, background and a photo. -->
+          <span class="eyebrow reveal">About the artist</span>
+          <h1 class="reveal" style="--d:.08s">M. J. Ferraro</h1>
           <div class="prose reveal" style="--d:.16s">
-            <p>New England harbors and landmarks, Gulf Coast dunes, marsh birds, garden flowers and seafood suppers.</p>
-            <p>She works mostly in acrylic, and also in oil, watercolor and mixed media. She paints on buoys, ornaments, bags, slate and furniture as well.</p>
-            <p>She also hosts Pasta &amp; Paint parties, where groups paint along with her over dinner.</p>
+            <p>M. J. Ferraro&rsquo;s artistic journey began on a whim, purchasing paints and canvas.
+              Discovering an unknown talent, her passion ignited.</p>
+            <p>This has generated a creative path fueled by passion, nature, and love. M. J. hopes
+              her paintings reflect this joy and wonder.</p>
+            <p>Her paintings have been exhibited in numerous galleries in Rhode Island and
+              Massachusetts, and most recently in Alabama.</p>
           </div>
           <div class="btn-row reveal" style="--d:.24s;margin-top:2rem">
             <a class="btn" href="gallery.html">Visit the gallery
@@ -40,12 +40,11 @@
             <a class="btn btn--ghost" href="contact.html">Say hello</a>
           </div>
         </div>
-        <figure class="portrait-frame reveal" style="--d:.2s">
-          <!-- PLACEHOLDER: swap for a photo of M. J. Ferraro at her easel -->
-          <img src="images/full/walking-on-top-of-the-world-16x20-acrylic-on-canvas.jpg" alt="Walking on Top of the World, a painting by M. J. Ferraro">
-          <figcaption>“Walking on Top of the World”</figcaption>
+        <figure class="portrait-frame reveal" style="--d:.2s" id="portrait">
+          <img src="images/about/mj-ferraro.jpg" alt="M. J. Ferraro"
+               onerror="document.getElementById('portrait').style.display='none'">
+          <figcaption class="hand">M. J.</figcaption>
         </figure>
-      </div>
     </section>
 
     <section class="section">
@@ -64,10 +63,10 @@
 
   <footer id="site-footer"></footer>
 
-  <script src="js/data.js?v=20260923125344"></script>
-  <script src="js/image-meta.js?v=20260923125344"></script>
-  <script src="js/site.js?v=20260923125344"></script>
-  <script src="js/viewer.js?v=20260923125344"></script>
+  <script src="js/data.js?v=20260923125828"></script>
+  <script src="js/image-meta.js?v=20260923125828"></script>
+  <script src="js/site.js?v=20260923125828"></script>
+  <script src="js/viewer.js?v=20260923125828"></script>
   <script>
   (function () {
     const { $, $$, esc, thumb } = window.Site;
