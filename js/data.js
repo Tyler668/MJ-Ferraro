@@ -23,7 +23,7 @@ window.CATEGORIES = [
   { id: "shore",   name: "Sea & Shore",         blurb: "Beaches, dunes, storms and sunsets.", cover: ["a-storm-is-brewing-16x20-acrylic-on-canvas", "stormy-light-36x36-acrylic-on-canvas-framed", "dauphin-island-sunset-24x36-acrylic-on-canvas"] },
   { id: "harbors", name: "Harbors & Hometowns", blurb: "Boatyards, harbors, fishing shacks and local landmarks.", cover: ["boatyard-12x12-acrylic-on-canvas", "fishermans-shack-sold", "gilbert-stuart-birthplace-12x12-acrylic-on-gallery-wrapped-canvas"] },
   { id: "flora",   name: "Flora & Fauna",       blurb: "Flowers, birds, sea life and other animals.", cover: ["blue-heron-family-16x16-acrylic-on-gallery-wrapped-canvas", "camellias-9x12-watercolor-on-paper", "sir-peter-rabbit-12x12-acrylic-on-canvas"] },
-  { id: "tables",  name: "Tables & Tales",      blurb: "Still lifes, holidays and celebrations.", cover: ["oysters-12x12-acrylic-in-gallery-wrapped-canvas", "blue-crab-boil-8x10-acrylic-on-canvas", "marci-gras-cheer-12x12-acrylic-on-gallery-wrapped-canvas"] },
+  { id: "tables",  name: "Assorted Works",      blurb: "Still lifes, holidays, celebrations and everything else.", cover: ["oysters-12x12-acrylic-in-gallery-wrapped-canvas", "blue-crab-boil-8x10-acrylic-on-canvas", "marci-gras-cheer-12x12-acrylic-on-gallery-wrapped-canvas"] },
 ];
 
 window.WORKS = [
