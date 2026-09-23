@@ -8,7 +8,7 @@
 window.SITE = {
   artist: "M. J. Ferraro",
   brand: "M. J. Ferraro",
-  tagline: "A local brush, a custom canvas & no two scenes alike",
+  tagline: "A local brush, a custom canvas & scenes that remind us of home",
   region: "New England & the Gulf Coast",
   email: "Mjf1162@gmail.com",
   phone: "(401) 480-0394",
