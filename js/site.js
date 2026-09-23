@@ -113,6 +113,7 @@
             <li><a href="mailto:${S.email}">${S.email}</a></li>
             <li><a href="tel:${S.phone.replace(/[^\d+]/g, "")}">${S.phone}</a></li>
             <li><a href="https://instagram.com/${S.instagram}" target="_blank" rel="noopener">Instagram</a></li>
+            ${S.facebook ? `<li><a href="${S.facebook}" target="_blank" rel="noopener">Facebook</a></li>` : ""}
             <li>${S.region}</li></ul></div>
         </div>
         <div class="footer-bottom"><span>© ${new Date().getFullYear()} ${Site.esc(S.brand)}. All artwork © the artist.</span></div>
@@ -126,10 +127,10 @@
     if (el.tagName === "A") {
       if (key === "email") el.href = `mailto:${v}`;
       if (key === "phone") el.href = `tel:${v.replace(/[^\d+]/g, "")}`;
-      if (key === "instagram") el.href = `https://instagram.com/${v}`;
-      if (key === "facebook") el.href = `https://facebook.com/${v}`;
+      if (key === "instagram") el.href = /^https?:/.test(v) ? v : `https://instagram.com/${v}`;
+      if (key === "facebook") el.href = /^https?:/.test(v) ? v : `https://facebook.com/${v}`;
     }
-    el.textContent = key === "instagram" || key === "facebook" ? `@${v}` : v;
+    el.textContent = key === "instagram" ? `@${v}` : key === "facebook" ? "Facebook" : v;
   });
 
   /* ---------- Reveal on scroll ---------- */

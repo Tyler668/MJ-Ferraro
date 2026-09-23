@@ -13,6 +13,10 @@ window.SITE = {
   email: "Mjf1162@gmail.com",
   phone: "(401) 480-0394",
   instagram: "margaretferraro",
+  facebook: "https://www.facebook.com/share/1BGt1o2Qxc/",
+  // Paste the Formspree form ID here (the part after /f/ in their endpoint).
+  // Empty = the contact form falls back to opening the visitor's email app.
+  formspree: "",
 };
 
 window.CATEGORIES = [

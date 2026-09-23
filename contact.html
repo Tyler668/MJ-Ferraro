@@ -6,10 +6,16 @@
   <title>Contact · M. J. Ferraro</title>
   <meta name="description" content="Ask about a painting, commission a pet portrait or book a Pasta & Paint party.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 4c11 0 20 8 20 18 0 7-5 10-10 10h-4c-2.5 0-4 1.8-4 4 0 1 .6 2 .6 3.2C26.6 42 25.4 44 23 44 12 44 4 35 4 24S13 4 24 4z' fill='%23e8dcc6'/%3E%3Ccircle cx='15' cy='20' r='3.6' fill='%237d5f33'/%3E%3Ccircle cx='23' cy='13' r='3.6' fill='%232c5b6b'/%3E%3Ccircle cx='33' cy='16' r='3.6' fill='%23b58a45'/%3E%3Ccircle cx='13' cy='30' r='3.6' fill='%238db3a7'/%3E%3C/svg%3E">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mjferraro.com/contact.html">
+  <meta property="og:title" content="Contact · M. J. Ferraro">
+  <meta property="og:description" content="Ask about a painting, commission a pet portrait or book a Pasta & Paint party.">
+  <meta property="og:image" content="https://mjferraro.com/images/full/birdhouses-of-dauphin-island-36x48-acrylic-on-gallery-wrapped-canvas.jpg">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..600,100;1,9..144,300..600,100&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260923122944">
+  <link rel="stylesheet" href="css/style.css?v=20260923123514">
 </head>
 <body data-page="contact" data-cta="off">
   <header id="site-header"></header>
@@ -31,6 +37,8 @@
         </div>
 
         <form class="form-card reveal" id="contact-form" style="--d:.2s" novalidate>
+          <input type="hidden" name="_subject" id="f-subject" value="New message from mjferraro.com">
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
           <div class="piece-chip" id="piece-chip"><img alt=""><div><small>Asking about</small><strong></strong></div></div>
           <div class="field-row">
             <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>
@@ -58,9 +66,9 @@
 
   <footer id="site-footer"></footer>
 
-  <script src="js/data.js?v=20260923122944"></script>
-  <script src="js/image-meta.js?v=20260923122944"></script>
-  <script src="js/site.js?v=20260923122944"></script>
+  <script src="js/data.js?v=20260923123514"></script>
+  <script src="js/image-meta.js?v=20260923123514"></script>
+  <script src="js/site.js?v=20260923123514"></script>
   <script>
   (function () {
     const { $, thumb } = window.Site;
@@ -81,21 +89,44 @@
       topic.value = q.get("topic");
     }
 
-    // No backend yet: open the visitor's email app with everything filled in.
-    // When hosting, swap for Netlify Forms or Formspree (see README).
-    $("#contact-form").addEventListener("submit", (e) => {
+    // Posts to Formspree when SITE.formspree is set (see js/data.js); with no ID
+    // configured it falls back to opening the visitor's email app, as before.
+    $("#contact-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const f = e.target, status = $("#form-status");
+      const fail = (m) => { status.style.color = "var(--accent)"; status.textContent = m; };
+      const draft = () => {
+        const body = `${f.message.value}\n\n${f.name.value}\n${f.email.value}`;
+        location.href = `mailto:${window.SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      };
       if (!f.name.value.trim() || !/\S+@\S+\.\S+/.test(f.email.value) || !f.message.value.trim()) {
-        status.style.color = "var(--accent)";
-        status.textContent = "Please add your name, a valid email and a short message.";
-        return;
+        return fail("Please add your name, a valid email and a short message.");
       }
       const subject = `${topic.options[topic.selectedIndex].text}${piece ? `: ${piece.title}` : ""}, from ${f.name.value}`;
-      const body = `${f.message.value}\n\n${f.name.value}\n${f.email.value}`;
-      location.href = `mailto:${window.SITE.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      status.style.color = "";
-      status.textContent = "Opening your email app…";
+      $("#f-subject").value = subject;
+
+      if (!window.SITE.formspree) {                     // no backend configured yet
+        draft();
+        status.style.color = ""; status.textContent = "Opening your email app\u2026";
+        return;
+      }
+
+      const btn = $("button[type=submit]", f);
+      btn.disabled = true;
+      status.style.color = ""; status.textContent = "Sending\u2026";
+      try {
+        const r = await fetch(`https://formspree.io/f/${window.SITE.formspree}`, {
+          method: "POST", headers: { Accept: "application/json" }, body: new FormData(f),
+        });
+        if (!r.ok) throw new Error(r.status);
+        f.reset();
+        status.textContent = "Thank you \u2014 your message is on its way.";
+      } catch (err) {
+        fail("That didn\u2019t send. Opening your email app instead\u2026");
+        draft();                                        // never lose the message
+      } finally {
+        btn.disabled = false;
+      }
     });
   })();
   </script>
