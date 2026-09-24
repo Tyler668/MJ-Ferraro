@@ -165,7 +165,11 @@ p { margin: 0 0 1em; }
   .nav-toggle { display: block; }
   .nav {
     position: fixed; inset: 0; z-index: 55;
-    flex-direction: column; justify-content: center; gap: .4rem;
+    flex-direction: column; gap: .4rem;
+    /* auto margins centre the list when it fits and let it scroll when it does not:
+       flex centring alone would put the first links out of reach in landscape */
+    justify-content: flex-start; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 84px 0 28px;
     background: var(--paper);
     clip-path: circle(0 at calc(100% - 38px) 38px);
     transition: clip-path .7s var(--ease-in-out);
@@ -175,7 +179,15 @@ p { margin: 0 0 1em; }
   .nav a { font-family: var(--font-display); font-size: 2rem; padding: .35rem 1rem; opacity: .42; }
   .nav a:hover, .nav a[aria-current="page"] { opacity: 1; }
   .nav a::after { bottom: .06em; left: 1rem; right: 1rem; }
+  .nav a:first-of-type { margin-top: auto; }
+  .nav a:last-of-type { margin-bottom: auto; }
   body.nav-open { overflow: hidden; }
+}
+
+/* a phone in landscape: less height than six big links need */
+@media (max-width: 1000px) and (max-height: 560px) {
+  .nav { padding: 64px 0 20px; }
+  .nav a { font-size: 1.45rem; padding: .18rem 1rem; }
 }
 
 /* ---------- Reveal on scroll ---------- */
