@@ -62,6 +62,8 @@ window.WORKS = [
     blurb: "A pot of blue crabs painted with quick, loose strokes." },
   { id: "mardi-gras-cheer", title: "Mardi Gras Cheer", img: "marci-gras-cheer-12x12-acrylic-on-gallery-wrapped-canvas", size: [12, 12], medium: "Acrylic on gallery-wrapped canvas", category: "tables", status: "available", price: 200,
     blurb: "Masks, feathers and beads at a balcony party in purple, green and gold." },
+  { id: "a-hug-from-santa", title: "A Hug From Santa", img: "a-hug-from-santa-12x12-acrylic-on-canvas", size: [12, 12], medium: "Acrylic on canvas", category: "tables", status: "available", price: 150,
+    blurb: "Santa rests his cheek against a reindeer, the two of them quiet together." },
   { id: "peacock-nest", title: "Peacock Eggs", img: "peacock-nest-20x20-acrylic-on-gallery-wrapped-canvas", size: [20, 20], medium: "Acrylic on gallery-wrapped canvas", category: "flora", status: "available", price: 400,
     blurb: "Blue eggs in a nest of peacock feathers." },
   { id: "sir-peter-rabbit", title: "Sir Peter Rabbit", img: "sir-peter-rabbit-12x12-acrylic-on-canvas", size: [12, 12], medium: "Acrylic on canvas", category: "flora", status: "available", price: 250, featured: true,
